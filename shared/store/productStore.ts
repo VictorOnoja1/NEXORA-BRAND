@@ -24,7 +24,7 @@ function makeId() {
 }
 
 export const useProductStore = create<ProductState>()(
-  persist(
+  persist<ProductState>(
     (set, get) => ({
       products: seedProducts,
       addProduct: (input) => {

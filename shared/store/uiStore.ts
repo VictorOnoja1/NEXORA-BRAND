@@ -18,7 +18,7 @@ interface UIState {
   dismissToast: (id: string) => void;
 }
 
-export const useUIStore = create<UIState>((set) => ({
+export const useUIStore = create<UIState>()((set) => ({
   mobileMenuOpen: false,
   searchOpen: false,
   filterDrawerOpen: false,

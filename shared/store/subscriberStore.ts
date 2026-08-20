@@ -38,7 +38,7 @@ interface SubscriberState {
 }
 
 export const useSubscriberStore = create<SubscriberState>()(
-  persist(
+  persist<SubscriberState>(
     (set, get) => ({
       subscribers: INITIAL_SUBSCRIBERS,
       subscribe: (email: string) => {
@@ -112,7 +112,7 @@ export const useSubscriberStore = create<SubscriberState>()(
       },
       toggleStatus: (id: string) => {
         const target = get().subscribers.find((s) => s.id === id);
-        const newStatus = target?.status === "active" ? "unsubscribed" : "active";
+        const newStatus: "active" | "unsubscribed" = target?.status === "active" ? "unsubscribed" : "active";
         set((state) => ({
           subscribers: state.subscribers.map((s) =>
             s.id === id ? { ...s, status: newStatus } : s

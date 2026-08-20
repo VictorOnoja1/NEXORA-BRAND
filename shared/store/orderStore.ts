@@ -22,7 +22,7 @@ function makeOrderNumber() {
 }
 
 export const useOrderStore = create<OrderState>()(
-  persist(
+  persist<OrderState>(
     (set, get) => ({
       orders: [],
       createOrder: ({ customer, items, subtotal, deliveryFee, paymentReference, status = "pending" }) => {

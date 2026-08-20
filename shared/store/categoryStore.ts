@@ -23,7 +23,7 @@ function slugify(name: string): CategorySlug {
 }
 
 export const useCategoryStore = create<CategoryState>()(
-  persist(
+  persist<CategoryState>(
     (set) => ({
       categories: seedCategories,
       addCategory: (input) => {
