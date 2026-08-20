@@ -161,6 +161,18 @@ create table if not exists payments (
 
 create index if not exists idx_payments_order on payments(order_id);
 
+-- -----------------------------------------------------------------------------
+-- newsletter_subscribers
+-- -----------------------------------------------------------------------------
+create table if not exists newsletter_subscribers (
+  id uuid primary key default gen_random_uuid(),
+  email text unique not null,
+  status text not null default 'active',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_subscribers_email on newsletter_subscribers(email);
+
 -- =============================================================================
 -- Row Level Security
 -- =============================================================================
@@ -177,10 +189,13 @@ alter table cart_items enable row level security;
 alter table orders enable row level security;
 alter table order_items enable row level security;
 alter table payments enable row level security;
+alter table newsletter_subscribers enable row level security;
 
 create policy "Public can read categories" on categories for select using (true);
 create policy "Public can read products" on products for select using (true);
 create policy "Public can read product images" on product_images for select using (true);
+create policy "Anyone can subscribe to newsletter" on newsletter_subscribers for insert with check (true);
+
 
 create policy "Customers can read their own record" on customers
   for select using (auth.uid() = auth_user_id);
