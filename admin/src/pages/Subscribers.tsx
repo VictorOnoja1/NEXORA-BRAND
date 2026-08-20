@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search, Mail, Copy, Download, Trash2, CheckCircle2, UserX } from "lucide-react";
 import { useSubscriberStore } from "@shared/store/subscriberStore";
 import { useUIStore } from "@shared/store/uiStore";
@@ -8,7 +8,12 @@ export default function AdminSubscribers() {
   const subscribers = useSubscriberStore((s) => s.subscribers);
   const removeSubscriber = useSubscriberStore((s) => s.removeSubscriber);
   const toggleStatus = useSubscriberStore((s) => s.toggleStatus);
+  const fetchFromSupabase = useSubscriberStore((s) => s.fetchFromSupabase);
   const showToast = useUIStore((s) => s.showToast);
+
+  useEffect(() => {
+    fetchFromSupabase();
+  }, [fetchFromSupabase]);
 
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "unsubscribed">("all");

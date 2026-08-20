@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>NEXORA Sync Bridge</title>
+</head>
+<body>
+  <script>
+    (function () {
+      function notifyParent(key, newValue) {
+        try {
+          window.parent.postMessage({ type: 'NEXORA_STORAGE_SYNC', key: key, newValue: newValue }, '*');
+        } catch (e) {
+          console.error('[NEXORA Bridge] Error posting sync message', e);
+        }
+      }
+
+      window.addEventListener('storage', function (e) {
+        if (e.key && e.key.startsWith('nexora-')) {
+          notifyParent(e.key, e.newValue);
+        }
+      });
+
+      window.addEventListener('message', function (e) {
+        if (!e.data || typeof e.data !== 'object') return;
+        if (e.data.type === 'NEXORA_STORAGE_WRITE') {
+          if (e.data.key && e.data.value !== undefined) {
+            localStorage.setItem(e.data.key, typeof e.data.value === 'string' ? e.data.value : JSON.stringify(e.data.value));
+            notifyParent(e.data.key, localStorage.getItem(e.data.key));
+          }
+        } else if (e.data.type === 'NEXORA_STORAGE_REQUEST_ALL') {
+          ['nexora-subscribers', 'nexora-orders', 'nexora-products', 'nexora-categories'].forEach(function (key) {
+            var val = localStorage.getItem(key);
+            if (val) notifyParent(key, val);
+          });
+        }
+      });
+
+      // Notify parent on load
+      ['nexora-subscribers', 'nexora-orders', 'nexora-products', 'nexora-categories'].forEach(function (key) {
+        var val = localStorage.getItem(key);
+        if (val) notifyParent(key, val);
+      });
+    })();
+  </script>
+</body>
+</html>

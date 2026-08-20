@@ -1,5 +1,5 @@
 import { NavLink, Outlet, Link, Navigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -16,6 +16,10 @@ import {
 } from "lucide-react";
 import logo from "../assets/nexora-logo.png";
 import { useAuthStore } from "../store/authStore";
+import { useSubscriberStore } from "@shared/store/subscriberStore";
+import { useOrderStore } from "@shared/store/orderStore";
+import { useProductStore } from "@shared/store/productStore";
+import { useCategoryStore } from "@shared/store/categoryStore";
 
 const navItems = [
   { label: "Dashboard", to: "/", icon: LayoutDashboard, end: true },
@@ -34,14 +38,44 @@ export default function AdminLayout() {
   const logout = useAuthStore((s) => s.logout);
   const location = useLocation();
 
+  const storefrontUrl = import.meta.env.VITE_STOREFRONT_URL || "http://localhost:5173";
+
+  useEffect(() => {
+    function handleSyncMessage(e: MessageEvent) {
+      if (!e.data || e.data.type !== "NEXORA_STORAGE_SYNC") return;
+      const { key, newValue } = e.data;
+      if (!newValue) return;
+      try {
+        const parsed = JSON.parse(newValue);
+        if (key === "nexora-subscribers" && Array.isArray(parsed?.state?.subscribers)) {
+          useSubscriberStore.setState({ subscribers: parsed.state.subscribers });
+        } else if (key === "nexora-orders" && Array.isArray(parsed?.state?.orders)) {
+          useOrderStore.setState({ orders: parsed.state.orders });
+        } else if (key === "nexora-products" && Array.isArray(parsed?.state?.products)) {
+          useProductStore.setState({ products: parsed.state.products });
+        } else if (key === "nexora-categories" && Array.isArray(parsed?.state?.categories)) {
+          useCategoryStore.setState({ categories: parsed.state.categories });
+        }
+      } catch (_) {}
+    }
+
+    window.addEventListener("message", handleSyncMessage);
+    return () => window.removeEventListener("message", handleSyncMessage);
+  }, []);
+
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
-  const storefrontUrl = import.meta.env.VITE_STOREFRONT_URL || "http://localhost:5173";
-
   return (
     <div className="min-h-screen flex bg-ivory">
+      {/* Hidden iframe bridge for cross-origin local storage sync */}
+      <iframe
+        src={`${storefrontUrl}/sync-bridge.html`}
+        style={{ display: "none" }}
+        title="NEXORA Storage Sync Bridge"
+      />
+
       {/* Sidebar */}
       <aside
         className={`fixed md:sticky top-0 h-screen w-64 bg-chocolate text-ivory flex flex-col z-40 transition-transform duration-300 ${
@@ -124,3 +158,4 @@ export default function AdminLayout() {
     </div>
   );
 }
+

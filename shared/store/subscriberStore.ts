@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Subscriber } from "../types";
+import { isSupabaseConfigured, supabase } from "../lib/supabase";
 
 const INITIAL_SUBSCRIBERS: Subscriber[] = [
   {
@@ -33,6 +34,7 @@ interface SubscriberState {
   subscribe: (email: string) => SubscribeResult;
   removeSubscriber: (id: string) => void;
   toggleStatus: (id: string) => void;
+  fetchFromSupabase: () => Promise<void>;
 }
 
 export const useSubscriberStore = create<SubscriberState>()(
@@ -56,6 +58,16 @@ export const useSubscriberStore = create<SubscriberState>()(
                 s.id === existing.id ? { ...s, status: "active", subscribedAt: new Date().toISOString() } : s
               ),
             }));
+
+            // Sync with Supabase if configured
+            if (isSupabaseConfigured && supabase) {
+              supabase
+                .from("newsletter_subscribers")
+                .update({ status: "active" })
+                .eq("email", cleanEmail)
+                .then();
+            }
+
             return { success: true, message: "Welcome back! Your subscription has been reactivated." };
           }
           return { success: false, message: "This email is already subscribed to NEXORA." };
@@ -72,20 +84,59 @@ export const useSubscriberStore = create<SubscriberState>()(
           subscribers: [newSub, ...state.subscribers],
         }));
 
+        // Sync with Supabase if configured
+        if (isSupabaseConfigured && supabase) {
+          supabase
+            .from("newsletter_subscribers")
+            .insert({ email: cleanEmail, status: "active" })
+            .then();
+        }
+
+        // Notify iframe/cross-origin sync bridge if embedded
+        try {
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new Event("storage"));
+          }
+        } catch (_) {}
+
         return { success: true, message: "Thank you for subscribing to NEXORA updates!" };
       },
-      removeSubscriber: (id: string) =>
+      removeSubscriber: (id: string) => {
+        const target = get().subscribers.find((s) => s.id === id);
         set((state) => ({
           subscribers: state.subscribers.filter((s) => s.id !== id),
-        })),
-      toggleStatus: (id: string) =>
+        }));
+        if (target && isSupabaseConfigured && supabase) {
+          supabase.from("newsletter_subscribers").delete().eq("email", target.email).then();
+        }
+      },
+      toggleStatus: (id: string) => {
+        const target = get().subscribers.find((s) => s.id === id);
+        const newStatus = target?.status === "active" ? "unsubscribed" : "active";
         set((state) => ({
           subscribers: state.subscribers.map((s) =>
-            s.id === id
-              ? { ...s, status: s.status === "active" ? "unsubscribed" : "active" }
-              : s
+            s.id === id ? { ...s, status: newStatus } : s
           ),
-        })),
+        }));
+        if (target && isSupabaseConfigured && supabase) {
+          supabase.from("newsletter_subscribers").update({ status: newStatus }).eq("email", target.email).then();
+        }
+      },
+      fetchFromSupabase: async () => {
+        if (!isSupabaseConfigured || !supabase) return;
+        try {
+          const { data, error } = await supabase.from("newsletter_subscribers").select("*");
+          if (!error && data && data.length > 0) {
+            const mapped: Subscriber[] = data.map((row: { id: string; email: string; status: string; created_at: string }) => ({
+              id: row.id,
+              email: row.email,
+              status: row.status as "active" | "unsubscribed",
+              subscribedAt: row.created_at || new Date().toISOString(),
+            }));
+            set({ subscribers: mapped });
+          }
+        } catch (_) {}
+      },
     }),
     { name: "nexora-subscribers" }
   )
