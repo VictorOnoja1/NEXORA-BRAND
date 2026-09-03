@@ -16,9 +16,9 @@
 services:
   - type: web
     name: nexora
-    runtime: static
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
+    env: static
+    buildCommand: npm install && npm run build:frontend
+    staticPublishPath: ./frontend/dist
     envVars:
       - key: VITE_PAYSTACK_PUBLIC_KEY
         sync: false
