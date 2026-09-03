@@ -224,12 +224,46 @@ create policy "Customers can read their own order items" on order_items
 -- rather than opened up to the anon key here.
 
 -- =============================================================================
--- Seed data note
+-- Seed data
 -- =============================================================================
--- The 8 categories and demo product catalogue currently live in
--- src/data/categories.ts and src/data/products.ts as typed mock data so the
--- storefront works out of the box with zero backend setup. When you connect
--- Supabase, either write a one-time migration script that INSERTs those same
--- records into `categories` / `products` / `product_images`, or re-enter your
--- real catalogue directly through the Admin → Products screen once it's
--- wired to Supabase instead of local state.
+-- Run this block once after creating the tables to populate the demo catalogue.
+-- All INSERTs use ON CONFLICT DO NOTHING so re-running is safe.
+
+-- Categories
+INSERT INTO categories (id, slug, name, descriptor, image, sort_order) VALUES
+  ('cat-00000001-0000-0000-0000-000000000001', 'wigs-hair',           'Wigs & Hair',           'Elevate your everyday look.',        '', 1),
+  ('cat-00000001-0000-0000-0000-000000000002', 'hair-care',           'Hair Care',              'Nourish, strengthen, shine.',        '', 2),
+  ('cat-00000001-0000-0000-0000-000000000003', 'skincare-cosmetics',  'Skincare & Cosmetics',  'Glow that feels like you.',          '', 3),
+  ('cat-00000001-0000-0000-0000-000000000004', 'perfumes',            'Perfumes',               'A signature scent, always.',         '', 4),
+  ('cat-00000001-0000-0000-0000-000000000005', 'jewellery',           'Jewellery',              'Finishing touches that shine.',      '', 5),
+  ('cat-00000001-0000-0000-0000-000000000006', 'attachments',         'Attachments',            'Effortless length and volume.',      '', 6),
+  ('cat-00000001-0000-0000-0000-000000000007', 'fashion',             'Fashion',                'Style that speaks for you.',         '', 7),
+  ('cat-00000001-0000-0000-0000-000000000008', 'accessories',         'Accessories',            'Small details, big confidence.',     '', 8)
+ON CONFLICT (slug) DO NOTHING;
+
+-- Products (images stored as URLs; update the `image` column with real Supabase Storage URLs)
+INSERT INTO products (id, slug, name, category_slug, price, previous_price, description, short_description, stock, featured, is_new, is_best_seller, rating, rating_count, sku, created_at) VALUES
+  ('prod-0000001-0000-0000-0000-000000000001', 'silky-bone-straight-wig',    'Silky Bone Straight Lace Wig',       'wigs-hair',           45000, 58000, 'A luxuriously soft bone-straight lace front wig with a natural hairline. Pre-plucked and ready to wear, this piece gives an effortless, salon-fresh finish for everyday elegance or special occasions.', 'Pre-plucked lace front, natural hairline, 20-inch length.', 12, true,  true,  true,  4.8, 24, 'NX-WIG-001', '2026-08-01 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000002', 'curly-bob-wig',               'Deep Curly Bob Wig',                  'wigs-hair',           38500, null,  'A voluminous curly bob that holds its bounce wash after wash. Lightweight cap construction keeps it breathable for all-day wear.', 'Voluminous curls, lightweight breathable cap.', 8,  true,  false, false, 4.6, 15, 'NX-WIG-002', '2026-07-20 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000003', 'argan-oil-hair-serum',        'Argan Oil Repair Hair Serum',         'hair-care',           8500,  null,  'A lightweight, fast-absorbing serum enriched with argan oil to tame frizz, add shine and repair split ends without weighing hair down.', 'Frizz control and shine, 100ml.', 30, false, false, true,  4.7, 41, 'NX-HC-001',  '2026-06-10 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000004', 'shea-moisture-repair-mask',   'Shea Butter Deep Repair Hair Mask',   'hair-care',           9200,  11000, 'An intensive weekly treatment mask formulated with shea butter to restore moisture, elasticity and softness to dry, damaged hair.', 'Weekly deep-conditioning treatment, 250g.', 4,  false, false, false, 4.5, 19, 'NX-HC-002',  '2026-05-28 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000005', 'matte-liquid-lipstick-set',   'Matte Liquid Lipstick Set (3-in-1)', 'skincare-cosmetics',  12500, null,  'Three long-wearing, transfer-resistant matte lipstick shades curated for everyday elegance. Lightweight formula that never feels drying.', '3 long-wear matte shades, travel-friendly case.', 18, true,  true,  false, 4.9, 33, 'NX-SC-001',  '2026-08-05 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000006', 'vitamin-c-glow-serum',        'Vitamin C Brightening Glow Serum',    'skincare-cosmetics',  15800, null,  'A daily brightening serum with stabilised Vitamin C to even skin tone, fade dark spots and reveal a natural, healthy glow.', 'Brightening daily serum, 30ml dropper bottle.', 22, true,  false, true,  4.8, 52, 'NX-SC-002',  '2026-07-15 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000007', 'rose-gold-perfume',           'Rose Nectar Eau de Parfum',            'perfumes',            22000, null,  'A warm, feminine fragrance blending rose petals, soft musk and a hint of vanilla. Long-lasting and unforgettable from morning to night.', 'Floral musk fragrance, 50ml, long-lasting.', 14, true,  false, false, 4.7, 28, 'NX-PF-001',  '2026-06-22 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000008', 'amber-oud-perfume',           'Amber Oud Intense',                    'perfumes',            26500, 31000, 'A rich, intense oud fragrance layered with amber and warm spice. Bold and confident — designed to be remembered.', 'Rich oud & amber, 50ml, evening wear.', 6,  false, false, false, 4.6, 11, 'NX-PF-002',  '2026-05-02 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000009', 'gold-plated-hoop-earrings',   'Gold-Plated Statement Hoop Earrings', 'jewellery',           7800,  null,  'Lightweight gold-plated hoops that elevate any outfit from day to night. Hypoallergenic posts for comfortable all-day wear.', 'Gold-plated, hypoallergenic, lightweight.', 25, false, true,  false, 4.8, 17, 'NX-JW-001',  '2026-08-10 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000010', 'layered-pendant-necklace',    'Layered Pendant Necklace Set',         'jewellery',           9600,  null,  'A delicately layered necklace set featuring a dainty pendant, designed to be worn alone or stacked for a personalised look.', '3-piece layered set, adjustable chain.', 10, true,  false, false, 4.7, 9,  'NX-JW-002',  '2026-07-01 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000011', 'kanekalon-braiding-hair',     'Premium Kanekalon Braiding Hair',      'attachments',         3200,  null,  'Soft, tangle-resistant kanekalon braiding hair that holds style beautifully and feels natural to the touch.', 'Tangle-resistant, natural feel, per pack.', 60, false, false, false, 4.4, 22, 'NX-AT-001',  '2026-04-18 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000012', 'clip-in-ponytail',            'Drawstring Clip-In Ponytail',          'attachments',         11500, null,  'An easy-to-attach drawstring ponytail for instant length and volume — perfect for a quick style upgrade with no heat required.', 'Drawstring attach, 18-inch length.', 3,  false, false, false, 4.5, 6,  'NX-AT-002',  '2026-03-30 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000013', 'satin-wrap-dress',            'Satin Wrap Midi Dress',                'fashion',             24500, null,  'A flattering satin wrap dress designed to skim the body elegantly. Versatile enough for the office, dinner or a special occasion.', 'Satin finish, adjustable wrap tie, midi length.', 9,  true,  true,  false, 4.9, 14, 'NX-FA-001',  '2026-08-12 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000014', 'tailored-blazer',             'Tailored Structured Blazer',           'fashion',             32000, null,  'A sharply tailored blazer that instantly polishes any outfit. Structured shoulders, a nipped waist and a timeless silhouette.', 'Structured fit, lined interior, true to size.', 7,  false, false, false, 4.6, 8,  'NX-FA-002',  '2026-06-05 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000015', 'structured-tote-bag',         'Structured Leather-Look Tote',         'accessories',         18500, null,  'A spacious, structured tote crafted from premium vegan leather. Roomy enough for everyday essentials without compromising on style.', 'Vegan leather, spacious interior, dual handles.', 11, true,  false, true,  4.8, 21, 'NX-AC-001',  '2026-07-08 00:00:00+00'),
+  ('prod-0000001-0000-0000-0000-000000000016', 'silk-hair-scarf',             'Pure Silk Hair Scarf',                 'accessories',         6200,  null,  'A pure silk scarf that protects hair while adding a chic finishing touch to any look — equally at home on your hair or around your neck.', '100% silk, protects hair, multi-way styling.', 0,  false, false, false, 4.3, 5,  'NX-AC-002',  '2026-02-14 00:00:00+00')
+ON CONFLICT (slug) DO NOTHING;
+
+-- Note: product_images are NOT seeded here because the seed products above have empty image URLs.
+-- Upload your product images to Supabase Storage, then INSERT rows into product_images with the
+-- public URLs, e.g.:
+--   INSERT INTO product_images (product_id, url, alt, position) VALUES
+--     ('prod-0000001-0000-0000-0000-000000000001', 'https://<project>.supabase.co/storage/v1/object/public/products/p1.jpg', 'Silky bone straight lace wig', 0);
+

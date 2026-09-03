@@ -13,6 +13,8 @@ import Contact from "./pages/Contact";
 import Wishlist from "./pages/Wishlist";
 import Account from "./pages/Account";
 import NotFound from "./pages/NotFound";
+import { useProductStore } from "@shared/store/productStore";
+import { useCategoryStore } from "@shared/store/categoryStore";
 
 function AdminRedirect() {
   const adminUrl = import.meta.env.VITE_ADMIN_URL || "http://localhost:5174";
@@ -31,6 +33,14 @@ function AdminRedirect() {
 }
 
 export default function App() {
+  const loadProducts = useProductStore((s) => s.loadProducts);
+  const loadCategories = useCategoryStore((s) => s.loadCategories);
+
+  useEffect(() => {
+    loadProducts();
+    loadCategories();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <Routes>
       <Route path="/admin" element={<AdminRedirect />} />

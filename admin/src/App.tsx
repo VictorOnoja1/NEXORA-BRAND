@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import AdminLayout from "./pages/AdminLayout";
 import Login from "./pages/Login";
@@ -11,8 +12,24 @@ import Customers from "./pages/Customers";
 import Subscribers from "./pages/Subscribers";
 import Sales from "./pages/Sales";
 import Settings from "./pages/Settings";
+import { useProductStore } from "@shared/store/productStore";
+import { useCategoryStore } from "@shared/store/categoryStore";
+import { useOrderStore } from "@shared/store/orderStore";
+import { useSubscriberStore } from "@shared/store/subscriberStore";
 
 export default function App() {
+  const loadProducts = useProductStore((s) => s.loadProducts);
+  const loadCategories = useCategoryStore((s) => s.loadCategories);
+  const loadOrders = useOrderStore((s) => s.loadOrders);
+  const fetchFromSupabase = useSubscriberStore((s) => s.fetchFromSupabase);
+
+  useEffect(() => {
+    loadProducts();
+    loadCategories();
+    loadOrders();
+    fetchFromSupabase();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <Routes>
       <Route path="/login" element={<Login />} />

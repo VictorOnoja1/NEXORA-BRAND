@@ -1,9 +1,18 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import type { Order, OrderStatus, CustomerInfo, OrderItem } from "../types";
+import {
+  fetchOrders,
+  fetchOrderById,
+  fetchOrderByNumber,
+  dbCreateOrder,
+  dbUpdateOrderStatus,
+} from "../lib/db";
 
 interface OrderState {
   orders: Order[];
+  loading: boolean;
+  error: string | null;
+  loadOrders: () => Promise<void>;
   createOrder: (input: {
     customer: CustomerInfo;
     items: OrderItem[];
@@ -11,42 +20,46 @@ interface OrderState {
     deliveryFee: number;
     paymentReference?: string;
     status?: OrderStatus;
-  }) => Order;
-  updateStatus: (orderId: string, status: OrderStatus) => void;
+  }) => Promise<Order>;
+  updateStatus: (orderId: string, status: OrderStatus) => Promise<void>;
   getByOrderNumber: (orderNumber: string) => Order | undefined;
+  fetchOrderById: (id: string) => Promise<Order | null>;
+  fetchOrderByNumber: (orderNumber: string) => Promise<Order | null>;
 }
 
-function makeOrderNumber() {
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  return `NX${new Date().getFullYear()}${rand}`;
-}
+export const useOrderStore = create<OrderState>()((set, get) => ({
+  orders: [],
+  loading: false,
+  error: null,
 
-export const useOrderStore = create<OrderState>()(
-  persist<OrderState>(
-    (set, get) => ({
-      orders: [],
-      createOrder: ({ customer, items, subtotal, deliveryFee, paymentReference, status = "pending" }) => {
-        const order: Order = {
-          id: `ord-${Math.random().toString(36).slice(2, 10)}`,
-          orderNumber: makeOrderNumber(),
-          customer,
-          items,
-          subtotal,
-          deliveryFee,
-          total: subtotal + deliveryFee,
-          status,
-          paymentReference,
-          createdAt: new Date().toISOString(),
-        };
-        set((state) => ({ orders: [order, ...state.orders] }));
-        return order;
-      },
-      updateStatus: (orderId, status) =>
-        set((state) => ({
-          orders: state.orders.map((o) => (o.id === orderId ? { ...o, status } : o)),
-        })),
-      getByOrderNumber: (orderNumber) => get().orders.find((o) => o.orderNumber === orderNumber),
-    }),
-    { name: "nexora-orders" }
-  )
-);
+  loadOrders: async () => {
+    set({ loading: true, error: null });
+    try {
+      const orders = await fetchOrders();
+      set({ orders, loading: false });
+    } catch (err) {
+      set({ loading: false, error: (err as Error).message });
+    }
+  },
+
+  createOrder: async (input) => {
+    const order = await dbCreateOrder(input);
+    set((state) => ({ orders: [order, ...state.orders] }));
+    return order;
+  },
+
+  updateStatus: async (orderId, status) => {
+    // Optimistic update
+    set((state) => ({
+      orders: state.orders.map((o) => (o.id === orderId ? { ...o, status } : o)),
+    }));
+    await dbUpdateOrderStatus(orderId, status);
+  },
+
+  getByOrderNumber: (orderNumber) =>
+    get().orders.find((o) => o.orderNumber === orderNumber),
+
+  fetchOrderById: (id) => fetchOrderById(id),
+
+  fetchOrderByNumber: (orderNumber) => fetchOrderByNumber(orderNumber),
+}));

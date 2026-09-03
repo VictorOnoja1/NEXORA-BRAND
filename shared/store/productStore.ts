@@ -1,64 +1,72 @@
 import { useMemo } from "react";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import type { Product, CategorySlug } from "../types";
 import {
-  seedProducts,
+  fetchProducts,
+  dbAddProduct,
+  dbUpdateProduct,
+  dbDeleteProduct,
+} from "../lib/db";
+import {
   findBySlug,
   findRelated,
   filterFeatured,
   sortNewest,
   filterBestSellers,
+  seedProducts,
 } from "../data/products";
 
 interface ProductState {
   products: Product[];
-  addProduct: (product: Omit<Product, "id" | "createdAt">) => Product;
-  updateProduct: (id: string, patch: Partial<Product>) => void;
-  deleteProduct: (id: string) => void;
+  loading: boolean;
+  error: string | null;
+  loadProducts: () => Promise<void>;
+  addProduct: (product: Omit<Product, "id" | "createdAt">) => Promise<Product>;
+  updateProduct: (id: string, patch: Partial<Product>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
   getById: (id: string) => Product | undefined;
 }
 
-function makeId() {
-  return `p-${Math.random().toString(36).slice(2, 10)}`;
-}
+export const useProductStore = create<ProductState>()((set, get) => ({
+  products: seedProducts, // start with seed so UI isn't blank before load
+  loading: false,
+  error: null,
 
-export const useProductStore = create<ProductState>()(
-  persist<ProductState>(
-    (set, get) => ({
-      products: seedProducts,
-      addProduct: (input) => {
-        const product: Product = {
-          ...input,
-          id: makeId(),
-          createdAt: new Date().toISOString(),
-        };
-        set((state) => ({ products: [product, ...state.products] }));
-        return product;
-      },
-      updateProduct: (id, patch) =>
-        set((state) => ({
-          products: state.products.map((p) => (p.id === id ? { ...p, ...patch } : p)),
-        })),
-      deleteProduct: (id) =>
-        set((state) => ({ products: state.products.filter((p) => p.id !== id) })),
-      getById: (id) => get().products.find((p) => p.id === id),
-    }),
-    {
-      name: "nexora-products",
-      merge: (persisted, current) => {
-        const persistedState = persisted as Partial<ProductState> | undefined;
-        const persistedProducts = persistedState?.products;
-        const hasProducts = Array.isArray(persistedProducts) && persistedProducts.length > 0;
-        return {
-          ...current,
-          ...persistedState,
-          products: hasProducts ? (persistedProducts as Product[]) : seedProducts,
-        };
-      },
+  loadProducts: async () => {
+    set({ loading: true, error: null });
+    try {
+      const products = await fetchProducts();
+      set({ products, loading: false });
+    } catch (err) {
+      set({ loading: false, error: (err as Error).message });
     }
-  )
-);
+  },
+
+  addProduct: async (input) => {
+    const product = await dbAddProduct(input);
+    set((state) => ({ products: [product, ...state.products] }));
+    return product;
+  },
+
+  updateProduct: async (id, patch) => {
+    // Optimistic update
+    set((state) => ({
+      products: state.products.map((p) => (p.id === id ? { ...p, ...patch } : p)),
+    }));
+    await dbUpdateProduct(id, patch);
+  },
+
+  deleteProduct: async (id) => {
+    set((state) => ({ products: state.products.filter((p) => p.id !== id) }));
+    await dbDeleteProduct(id);
+  },
+
+  getById: (id) => get().products.find((p) => p.id === id),
+}));
+
+// ---------------------------------------------------------------------------
+// Selector hooks
+// ---------------------------------------------------------------------------
 
 export const useProducts = () => useProductStore((s) => s.products);
 
