@@ -31,12 +31,12 @@ export default function AdminCustomers() {
   return (
     <div>
       <h1 className="font-serif text-2xl md:text-3xl text-chocolate mb-1">Customers</h1>
-      <p className="text-sm text-plum-400 mb-6 font-sans">{customers.length} customers from order history</p>
+      <p className="text-sm text-black mb-6 font-sans">{customers.length} customers from order history</p>
 
       <div className="border border-plum-100 rounded-lg overflow-hidden overflow-x-auto">
         <table className="w-full text-sm min-w-[640px]">
           <thead>
-            <tr className="text-left text-xs text-plum-400 border-b border-plum-100 bg-blush/10">
+            <tr className="text-left text-xs text-black border-b border-plum-100 bg-blush/10">
               <th className="px-5 py-3 font-medium">Name</th>
               <th className="px-5 py-3 font-medium">Contact</th>
               <th className="px-5 py-3 font-medium">Orders</th>
@@ -48,19 +48,19 @@ export default function AdminCustomers() {
             {customers.map((c) => (
               <tr key={c.email} className="border-b border-plum-50 last:border-0 hover:bg-blush/10">
                 <td className="px-5 py-3 text-chocolate font-medium">{c.name}</td>
-                <td className="px-5 py-3 text-plum-500 font-sans">
+                <td className="px-5 py-3 text-black font-sans">
                   <p>{c.email}</p>
-                  <p className="text-xs text-plum-400">{c.phone}</p>
+                  <p className="text-xs text-black">{c.phone}</p>
                 </td>
-                <td className="px-5 py-3 text-plum-500 font-sans">{c.orderCount}</td>
+                <td className="px-5 py-3 text-black font-sans">{c.orderCount}</td>
                 <td className="px-5 py-3 text-chocolate font-sans">{formatNaira(c.totalSpent)}</td>
-                <td className="px-5 py-3 text-plum-400 font-sans">{new Date(c.lastOrder).toLocaleDateString()}</td>
+                <td className="px-5 py-3 text-black font-sans">{new Date(c.lastOrder).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>
         </table>
         {customers.length === 0 && (
-          <p className="text-sm text-plum-400 font-sans px-5 py-10 text-center">No customers yet — they'll appear here after the first order.</p>
+          <p className="text-sm text-black font-sans px-5 py-10 text-center">No customers yet — they'll appear here after the first order.</p>
         )}
       </div>
     </div>

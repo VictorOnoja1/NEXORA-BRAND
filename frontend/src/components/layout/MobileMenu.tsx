@@ -33,7 +33,7 @@ export function MobileMenu() {
           </Link>
           <div className="flex items-center gap-3">
             <button
-              className="flex items-center gap-1 text-xs text-plum-400 font-sans"
+              className="flex items-center gap-1 text-xs text-black font-sans"
               aria-label="Language: English"
             >
               <Globe size={14} /> EN
@@ -56,7 +56,7 @@ export function MobileMenu() {
               onClick={() => setOpen(false)}
               className="flex items-center gap-4 px-4 py-3.5 text-chocolate font-serif text-lg hover:bg-blush/40 rounded transition-colors"
             >
-              <link.icon size={18} className="text-plum" />
+              <link.icon size={18} className="text-black" />
               {link.label}
             </Link>
           ))}
@@ -72,7 +72,7 @@ export function MobileMenu() {
               onClick={() => setOpen(false)}
               className="flex items-center gap-4 px-4 py-3 text-chocolate/80 text-sm font-medium hover:bg-blush/40 rounded transition-colors"
             >
-              <link.icon size={16} className="text-plum-400" />
+              <link.icon size={16} className="text-black" />
               {link.label}
             </Link>
           ))}

@@ -6,6 +6,7 @@ import { useOrderStore } from "../store/orderStore";
 import { useCartStore } from "../store/cartStore";
 import { formatNaira } from "../lib/format";
 import { Button } from "../components/ui/Button";
+import { ProductImage } from "../components/ui/ProductImage";
 import { whatsappLink } from "../lib/config";
 
 export default function OrderConfirmation() {
@@ -41,15 +42,15 @@ export default function OrderConfirmation() {
         className="text-center mb-10"
       >
         <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 ${isPending ? "bg-champagne/40" : "bg-blush/60"}`}>
-          {isPending ? <Clock size={30} className="text-plum" /> : <CheckCircle2 size={30} className="text-plum" />}
+          {isPending ? <Clock size={30} className="text-black" /> : <CheckCircle2 size={30} className="text-black" />}
         </div>
-        <p className="text-xs font-semibold tracking-widest2 uppercase text-plum-400 mb-2">
+        <p className="text-xs font-semibold tracking-widest2 uppercase text-black mb-2">
           {isPending ? "Order Received" : "Order Confirmed"}
         </p>
         <h1 className="font-serif text-3xl md:text-4xl text-chocolate mb-3">
           Thank you, {order.customer.fullName.split(" ")[0]}
         </h1>
-        <p className="text-plum-500 text-sm max-w-md mx-auto font-sans">
+        <p className="text-black text-sm max-w-md mx-auto font-sans">
           {isPending
             ? "Your order has been recorded and is awaiting payment confirmation. Our team will reach out on WhatsApp shortly to complete your order."
             : "Your order has been placed successfully. We'll notify you as it's processed and shipped."}
@@ -64,10 +65,10 @@ export default function OrderConfirmation() {
       >
         <div className="flex items-center justify-between mb-5 pb-5 border-b border-plum-100">
           <div>
-            <p className="text-xs text-plum-400">Order Number</p>
+            <p className="text-xs text-black">Order Number</p>
             <p className="font-serif text-lg text-chocolate">{order.orderNumber}</p>
           </div>
-          <span className={`text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full ${isPending ? "bg-champagne/40 text-plum" : "bg-blush text-plum"}`}>
+          <span className={`text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full ${isPending ? "bg-champagne/40 text-black" : "bg-blush text-black"}`}>
             {order.status}
           </span>
         </div>
@@ -75,10 +76,10 @@ export default function OrderConfirmation() {
         <div className="flex flex-col gap-4 mb-5">
           {order.items.map((item) => (
             <div key={item.productId} className="flex items-center gap-3">
-              <img src={item.image} alt="" className="w-12 h-14 rounded object-cover shrink-0" />
+              <ProductImage src={item.image} alt="" className="w-12 h-14 rounded object-cover shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-chocolate line-clamp-1">{item.name}</p>
-                <p className="text-xs text-plum-400">Qty {item.quantity}</p>
+                <p className="text-xs text-black">Qty {item.quantity}</p>
               </div>
               <p className="text-sm text-chocolate font-medium">{formatNaira(item.price * item.quantity)}</p>
             </div>
@@ -108,7 +109,7 @@ export default function OrderConfirmation() {
         className="border border-plum-100 rounded-lg p-6 mb-8"
       >
         <h2 className="text-sm font-semibold text-chocolate mb-3">Delivery Information</h2>
-        <p className="text-sm text-plum-500 font-sans leading-relaxed">
+        <p className="text-sm text-black font-sans leading-relaxed">
           {order.customer.address}, {order.customer.city}, {order.customer.state}
           <br />
           {order.customer.phone} · {order.customer.email}

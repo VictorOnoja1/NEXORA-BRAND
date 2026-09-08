@@ -26,7 +26,7 @@ export function MobileNav() {
             end={item.to === "/"}
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium transition-colors ${
-                isActive ? "text-plum" : "text-plum-300"
+                isActive ? "text-black" : "text-black"
               }`
             }
           >

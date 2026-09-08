@@ -4,9 +4,12 @@ import { formatNaira } from "@shared/lib/format";
 import { StatCard } from "../components/StatCard";
 import { Wallet, ShoppingCart, TrendingUp, Table2 } from "lucide-react";
 
-const PLUM = "#4A2634";
-const PLUM_SOFT = "rgba(74,38,52,0.12)";
-const GRID = "#EADFE1";
+// NEXORA 2.0 deep-lilac palette — SVG fill/stroke attributes can't read
+// Tailwind classes, so the chart colors are kept in sync with
+// tailwind.config.js's plum/champagne tokens by hand.
+const PLUM = "#80639F";
+const PLUM_SOFT = "rgba(128,99,159,0.14)";
+const GRID = "#E6DDF2";
 
 function niceMax(value: number) {
   if (value <= 0) return 10;
@@ -67,7 +70,7 @@ export default function AdminSales() {
   return (
     <div>
       <h1 className="font-serif text-2xl md:text-3xl text-chocolate mb-1">Sales</h1>
-      <p className="text-sm text-plum-400 mb-6 font-sans">Revenue and order performance overview.</p>
+      <p className="text-sm text-black mb-6 font-sans">Revenue and order performance overview.</p>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <StatCard label="Total Revenue" value={formatNaira(revenue)} icon={Wallet} tone="plum" />
@@ -80,7 +83,7 @@ export default function AdminSales() {
           <h2 className="font-serif text-lg text-chocolate">Revenue — Last 14 Days</h2>
           <button
             onClick={() => setShowTable((v) => !v)}
-            className="flex items-center gap-1.5 text-xs text-plum-400 hover:text-plum"
+            className="flex items-center gap-1.5 text-xs text-black hover:text-black"
           >
             <Table2 size={13} /> {showTable ? "View chart" : "View as table"}
           </button>
@@ -90,7 +93,7 @@ export default function AdminSales() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs text-plum-400 border-b border-plum-100">
+                <tr className="text-left text-xs text-black border-b border-plum-100">
                   <th className="py-2 font-medium">Date</th>
                   <th className="py-2 font-medium text-right">Revenue</th>
                 </tr>
@@ -98,7 +101,7 @@ export default function AdminSales() {
               <tbody>
                 {days.map((d) => (
                   <tr key={d.date} className="border-b border-plum-50 last:border-0">
-                    <td className="py-2 text-plum-500 font-sans">{d.label}</td>
+                    <td className="py-2 text-black font-sans">{d.label}</td>
                     <td className="py-2 text-chocolate text-right font-sans">{formatNaira(d.value)}</td>
                   </tr>
                 ))}
@@ -145,7 +148,7 @@ export default function AdminSales() {
               })}
               <line x1={0} x2={100} y1={chartHeight - 24} y2={chartHeight - 24} stroke={GRID} strokeWidth={1} vectorEffect="non-scaling-stroke" />
             </svg>
-            <div className="flex text-[9px] text-plum-300 font-sans mt-1">
+            <div className="flex text-[9px] text-black font-sans mt-1">
               {days.map((d, i) => (
                 <div key={d.date} style={{ width: `${barSlot}%` }} className="text-center truncate">
                   {i % 2 === 0 ? d.label : ""}
@@ -165,12 +168,12 @@ export default function AdminSales() {
       <div className="border border-plum-100 rounded-lg p-5">
         <h2 className="font-serif text-lg text-chocolate mb-5">Top Products by Revenue</h2>
         {revenueByCategory.length === 0 ? (
-          <p className="text-sm text-plum-400 font-sans py-6 text-center">No sales recorded yet.</p>
+          <p className="text-sm text-black font-sans py-6 text-center">No sales recorded yet.</p>
         ) : (
           <div className="flex flex-col gap-3">
             {revenueByCategory.map(([name, value]) => (
               <div key={name} className="flex items-center gap-3">
-                <p className="text-xs text-plum-500 font-sans w-40 shrink-0 truncate">{name}</p>
+                <p className="text-xs text-black font-sans w-40 shrink-0 truncate">{name}</p>
                 <div className="flex-1 h-5 bg-plum-50 rounded-sm overflow-hidden">
                   <div
                     className="h-full bg-plum rounded-sm"

@@ -8,6 +8,7 @@ import { getAvailability } from "@shared/types";
 import { Badge } from "@shared/components/ui/Badge";
 import { Button } from "@shared/components/ui/Button";
 import { Modal } from "@shared/components/ui/Modal";
+import { ProductImage } from "@shared/components/ui/ProductImage";
 
 export default function AdminProducts() {
   const products = useProductStore((s) => s.products);
@@ -21,30 +22,30 @@ export default function AdminProducts() {
 
   return (
     <div>
-      <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="font-serif text-2xl md:text-3xl text-chocolate mb-1">Products</h1>
-          <p className="text-sm text-plum-400 font-sans">{products.length} products in catalogue</p>
+          <p className="text-sm text-black font-sans">{products.length} products in catalogue</p>
         </div>
-        <Link to="/products/new">
-          <Button icon={<Plus size={16} />}>Add Product</Button>
+        <Link to="/products/new" className="shrink-0">
+          <Button icon={<Plus size={16} />} fullWidth className="sm:w-auto">Add Product</Button>
         </Link>
       </div>
 
       <div className="relative max-w-sm mb-5">
-        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-plum-300" />
+        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-black" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search products…"
-          className="w-full border border-plum-200 rounded pl-10 pr-4 py-2.5 text-sm text-chocolate placeholder:text-plum-300 focus:outline-none focus:border-plum"
+          className="w-full border border-plum-200 rounded pl-10 pr-4 py-2.5 text-sm text-chocolate placeholder:text-black focus:outline-none focus:border-plum"
         />
       </div>
 
       <div className="border border-plum-100 rounded-lg overflow-hidden overflow-x-auto">
         <table className="w-full text-sm min-w-[720px]">
           <thead>
-            <tr className="text-left text-xs text-plum-400 border-b border-plum-100 bg-blush/10">
+            <tr className="text-left text-xs text-black border-b border-plum-100 bg-blush/10">
               <th className="px-5 py-3 font-medium">Product</th>
               <th className="px-5 py-3 font-medium">Category</th>
               <th className="px-5 py-3 font-medium">Price</th>
@@ -61,17 +62,17 @@ export default function AdminProducts() {
                 <tr key={p.id} className="border-b border-plum-50 last:border-0 hover:bg-blush/10">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
-                      <img src={p.images[0]?.url} alt="" className="w-10 h-12 rounded object-cover shrink-0" />
+                      <ProductImage src={p.images[0]?.url} alt="" className="w-10 h-12 rounded object-cover shrink-0" />
                       <div className="min-w-0">
                         <p className="text-chocolate font-medium line-clamp-1">{p.name}</p>
-                        <p className="text-xs text-plum-400">{p.sku}</p>
+                        <p className="text-xs text-black">{p.sku}</p>
                       </div>
                       {p.featured && <Badge variant="champagne">Featured</Badge>}
                     </div>
                   </td>
-                  <td className="px-5 py-3 text-plum-500 font-sans">{category?.name || "—"}</td>
+                  <td className="px-5 py-3 text-black font-sans">{category?.name || "—"}</td>
                   <td className="px-5 py-3 text-chocolate font-sans">{formatNaira(p.price)}</td>
-                  <td className="px-5 py-3 text-plum-500 font-sans">{p.stock}</td>
+                  <td className="px-5 py-3 text-black font-sans">{p.stock}</td>
                   <td className="px-5 py-3">
                     <Badge variant={availability === "out-of-stock" ? "danger" : availability === "low-stock" ? "champagne" : "outline"}>
                       {availability === "in-stock" ? "In stock" : availability === "low-stock" ? "Low stock" : "Out of stock"}
@@ -79,10 +80,10 @@ export default function AdminProducts() {
                   </td>
                   <td className="px-5 py-3">
                     <div className="flex items-center justify-end gap-1">
-                      <Link to={`/products/${p.id}/edit`} aria-label={`Edit ${p.name}`} className="p-2 text-plum-400 hover:text-plum">
+                      <Link to={`/products/${p.id}/edit`} aria-label={`Edit ${p.name}`} className="p-2 text-black hover:text-black">
                         <Pencil size={15} />
                       </Link>
-                      <button onClick={() => setConfirmDelete(p.id)} aria-label={`Delete ${p.name}`} className="p-2 text-plum-400 hover:text-red-500">
+                      <button onClick={() => setConfirmDelete(p.id)} aria-label={`Delete ${p.name}`} className="p-2 text-black hover:text-red-500">
                         <Trash2 size={15} />
                       </button>
                     </div>
@@ -93,12 +94,12 @@ export default function AdminProducts() {
           </tbody>
         </table>
         {filtered.length === 0 && (
-          <p className="text-sm text-plum-400 font-sans px-5 py-10 text-center">No products match your search.</p>
+          <p className="text-sm text-black font-sans px-5 py-10 text-center">No products match your search.</p>
         )}
       </div>
 
       <Modal open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Delete product?">
-        <p className="text-sm text-plum-500 font-sans mb-6">
+        <p className="text-sm text-black font-sans mb-6">
           Are you sure you want to delete <strong>{productToDelete?.name}</strong>? This can't be undone.
         </p>
         <div className="flex gap-3">

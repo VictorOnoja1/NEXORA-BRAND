@@ -33,7 +33,7 @@ export function FilterDrawer({ open, onClose, filters, onChange, onReset, result
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.05 }}
         >
-          <h4 className="text-xs font-semibold uppercase tracking-widest2 text-plum-400 mb-3">Category</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-widest2 text-black mb-3">Category</h4>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => onChange({ ...filters, category: "all" })}
@@ -66,7 +66,7 @@ export function FilterDrawer({ open, onClose, filters, onChange, onReset, result
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <h4 className="text-xs font-semibold uppercase tracking-widest2 text-plum-400 mb-3">
+          <h4 className="text-xs font-semibold uppercase tracking-widest2 text-black mb-3">
             Price up to ₦{filters.maxPrice.toLocaleString()}
           </h4>
           <input
@@ -85,7 +85,7 @@ export function FilterDrawer({ open, onClose, filters, onChange, onReset, result
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
         >
-          <h4 className="text-xs font-semibold uppercase tracking-widest2 text-plum-400 mb-3">Availability</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-widest2 text-black mb-3">Availability</h4>
           <label className="flex items-center gap-2.5 text-sm text-chocolate">
             <input
               type="checkbox"

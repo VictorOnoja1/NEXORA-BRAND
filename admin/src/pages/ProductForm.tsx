@@ -1,11 +1,22 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { ChevronLeft, Sparkles } from "lucide-react";
+import { ChevronLeft, Sparkles, UploadCloud } from "lucide-react";
 import { useProductStore } from "@shared/store/productStore";
 import { useCategories } from "@shared/store/categoryStore";
 import { Button } from "@shared/components/ui/Button";
 import { useUIStore } from "@shared/store/uiStore";
+import { supabase, isSupabaseConfigured } from "@shared/lib/supabase";
 import type { CategorySlug } from "@shared/types";
+
+// Product photos are uploaded straight into this Supabase Storage bucket
+// (see supabase/storage.sql) — no more pasting a pre-hosted URL by hand.
+const PRODUCT_IMAGE_BUCKET = "product-images";
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5MB
+
+function fileExtension(name: string): string {
+  const match = /\.([a-z0-9]+)$/i.exec(name);
+  return match ? match[1].toLowerCase() : "jpg";
+}
 
 const placeholderPool = import.meta.glob<{ default: string }>(
   "../assets/placeholders/prod-*.jpg",
@@ -52,6 +63,9 @@ export default function AdminProductForm() {
   const addProduct = useProductStore((s) => s.addProduct);
   const updateProduct = useProductStore((s) => s.updateProduct);
   const showToast = useUIStore((s) => s.showToast);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const existing = productId ? getById(productId) : undefined;
 
@@ -75,6 +89,51 @@ export default function AdminProductForm() {
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // let the same file be re-selected later if needed
+
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Please choose an image file (JPG, PNG, WEBP…).");
+      return;
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setUploadError("That image is larger than 5MB — please choose a smaller file.");
+      return;
+    }
+
+    setUploadError(null);
+    setUploading(true);
+    try {
+      if (isSupabaseConfigured && supabase) {
+        const path = `products/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileExtension(file.name)}`;
+        const { error } = await supabase.storage
+          .from(PRODUCT_IMAGE_BUCKET)
+          .upload(path, file, { cacheControl: "3600", upsert: false });
+        if (error) throw error;
+        const { data } = supabase.storage.from(PRODUCT_IMAGE_BUCKET).getPublicUrl(path);
+        update("imageUrl", data.publicUrl);
+      } else {
+        // No live Supabase project configured in this environment — fall back
+        // to an in-browser preview so the feature still works, though this
+        // image only exists on this device until a real project is connected.
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
+        });
+        update("imageUrl", dataUrl);
+      }
+    } catch (err) {
+      console.error(err);
+      setUploadError("Upload failed — please try again, or paste an image URL below instead.");
+    } finally {
+      setUploading(false);
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -106,12 +165,12 @@ export default function AdminProductForm() {
     navigate("/products");
   }
 
-  const inputClass = "w-full border border-plum-200 rounded px-4 py-2.5 text-sm text-chocolate placeholder:text-plum-300 bg-ivory focus:outline-none focus:border-plum";
-  const labelClass = "text-xs font-medium text-plum-500 mb-1.5 block";
+  const inputClass = "w-full border border-plum-200 rounded px-4 py-2.5 text-sm text-chocolate placeholder:text-black bg-ivory focus:outline-none focus:border-plum";
+  const labelClass = "text-xs font-medium text-black mb-1.5 block";
 
   return (
     <div className="max-w-3xl">
-      <Link to="/products" className="inline-flex items-center gap-1 text-sm text-plum-400 hover:text-plum mb-4">
+      <Link to="/products" className="inline-flex items-center gap-1 text-sm text-black hover:text-black mb-4">
         <ChevronLeft size={15} /> Back to Products
       </Link>
       <h1 className="font-serif text-2xl md:text-3xl text-chocolate mb-6">
@@ -124,7 +183,36 @@ export default function AdminProductForm() {
           <div className="flex items-start gap-4">
             <img src={form.imageUrl || placeholderUrls[0]} alt="" className="w-24 h-28 rounded-lg object-cover bg-plum-50" />
             <div className="flex-1">
-              <label className={labelClass} htmlFor="imageUrl">Image URL</label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+              <div className="flex flex-wrap items-center gap-3 mb-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  icon={<UploadCloud size={14} />}
+                >
+                  {uploading ? "Uploading…" : "Upload Image"}
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => update("imageUrl", placeholderUrls[Math.floor(Math.random() * placeholderUrls.length)])}
+                  className="inline-flex items-center gap-1.5 text-xs text-black hover:underline"
+                >
+                  <Sparkles size={12} /> Use a placeholder instead
+                </button>
+              </div>
+              {uploadError && (
+                <p className="text-[11px] text-red-500 mb-2 font-sans">{uploadError}</p>
+              )}
+              <label className={labelClass} htmlFor="imageUrl">Or paste an image URL</label>
               <input
                 id="imageUrl"
                 className={inputClass}
@@ -132,16 +220,6 @@ export default function AdminProductForm() {
                 onChange={(e) => update("imageUrl", e.target.value)}
                 placeholder="https://…"
               />
-              <button
-                type="button"
-                onClick={() => update("imageUrl", placeholderUrls[Math.floor(Math.random() * placeholderUrls.length)])}
-                className="inline-flex items-center gap-1.5 text-xs text-plum mt-2 hover:underline"
-              >
-                <Sparkles size={12} /> Use a placeholder image
-              </button>
-              <p className="text-[11px] text-plum-400 mt-2 font-sans">
-                Image upload via Supabase Storage / Cloudinary isn't connected yet — paste a hosted image URL for now.
-              </p>
             </div>
           </div>
         </div>

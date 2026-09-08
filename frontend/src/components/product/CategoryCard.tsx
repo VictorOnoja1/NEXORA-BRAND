@@ -10,10 +10,11 @@ export function CategoryCard({ category, index = 0 }: { category: Category; inde
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, delay: Math.min(index * 0.06, 0.36) }}
+      whileHover={{ y: -4 }}
     >
       <Link
         to={`/shop?category=${category.slug}`}
-        className="group relative block overflow-hidden rounded-lg aspect-[4/5]"
+        className="group relative block overflow-hidden rounded-lg aspect-[4/5] shadow-soft transition-shadow duration-300 hover:shadow-elevated"
       >
         <img
           src={category.image}

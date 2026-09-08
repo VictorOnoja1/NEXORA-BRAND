@@ -1,7 +1,8 @@
+import { useMemo } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CartLine } from "@shared/types";
-import { useProductStore } from "@shared/store/productStore";
+import { useProductStore, useProducts } from "@shared/store/productStore";
 
 interface CartState {
   lines: CartLine[];
@@ -58,3 +59,19 @@ export const useCartStore = create<CartState>()(
     { name: "nexora-cart" }
   )
 );
+
+/**
+ * Cart item count for the header badge. Sums only lines whose product is
+ * still in the current catalogue (useProducts()), matching how Cart.tsx
+ * itself filters lines before rendering/counting them — so a line left
+ * over from a deactivated product can't inflate the badge past what the
+ * Cart page actually shows.
+ */
+export const useCartCount = () => {
+  const lines = useCartStore((s) => s.lines);
+  const products = useProducts();
+  return useMemo(() => {
+    const validIds = new Set(products.map((p) => p.id));
+    return lines.reduce((sum, l) => (validIds.has(l.productId) ? sum + l.quantity : sum), 0);
+  }, [lines, products]);
+};

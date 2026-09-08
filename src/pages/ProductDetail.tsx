@@ -10,6 +10,7 @@ import { Rating } from "../components/ui/Rating";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { PopOnChange } from "../components/ui/PopOnChange";
+import { ProductImage } from "../components/ui/ProductImage";
 import { QuantitySelector } from "../components/product/QuantitySelector";
 import { ProductCard } from "../components/product/ProductCard";
 import { useCartStore } from "../store/cartStore";
@@ -51,14 +52,14 @@ export default function ProductDetail() {
 
   return (
     <div className="max-w-8xl mx-auto px-4 md:px-10 py-6 md:py-10 pb-28 md:pb-10">
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-plum-400 mb-6 font-sans flex-wrap">
-        <Link to="/" className="hover:text-plum">Home</Link>
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-black mb-6 font-sans flex-wrap">
+        <Link to="/" className="hover:text-black">Home</Link>
         <ChevronRight size={12} />
-        <Link to="/shop" className="hover:text-plum">Shop</Link>
+        <Link to="/shop" className="hover:text-black">Shop</Link>
         {category && (
           <>
             <ChevronRight size={12} />
-            <Link to={`/shop?category=${category.slug}`} className="hover:text-plum">{category.name}</Link>
+            <Link to={`/shop?category=${category.slug}`} className="hover:text-black">{category.name}</Link>
           </>
         )}
         <ChevronRight size={12} />
@@ -75,7 +76,7 @@ export default function ProductDetail() {
             transition={{ duration: 0.25 }}
             className="aspect-[3/4] rounded-lg overflow-hidden bg-plum-50 mb-3"
           >
-            <img
+            <ProductImage
               src={product.images[activeImage]?.url}
               alt={product.images[activeImage]?.alt || product.name}
               className="w-full h-full object-cover"
@@ -92,7 +93,7 @@ export default function ProductDetail() {
                     activeImage === i ? "border-plum" : "border-transparent"
                   }`}
                 >
-                  <img src={img.url} alt="" className="w-full h-full object-cover" />
+                  <ProductImage src={img.url} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -102,7 +103,7 @@ export default function ProductDetail() {
         {/* Info */}
         <div>
           {category && (
-            <Link to={`/shop?category=${category.slug}`} className="text-xs font-semibold uppercase tracking-widest2 text-plum-400 hover:text-plum">
+            <Link to={`/shop?category=${category.slug}`} className="text-xs font-semibold uppercase tracking-widest2 text-black hover:text-black">
               {category.name}
             </Link>
           )}
@@ -119,7 +120,7 @@ export default function ProductDetail() {
 
           <PriceDisplay price={product.price} previousPrice={product.previousPrice} size="lg" />
 
-          <p className="text-plum-500 text-sm leading-relaxed mt-5 mb-6 font-sans">
+          <p className="text-black text-sm leading-relaxed mt-5 mb-6 font-sans">
             {product.description}
           </p>
 
@@ -156,32 +157,32 @@ export default function ProductDetail() {
               className="shrink-0 w-14 h-14 rounded border border-plum-200 flex items-center justify-center hover:border-plum active:scale-90 transition-all"
             >
               <PopOnChange changeKey={String(isWishlisted)} className="flex">
-                <Heart size={20} className={isWishlisted ? "fill-plum text-plum" : "text-chocolate"} />
+                <Heart size={20} className={isWishlisted ? "fill-plum text-black" : "text-chocolate"} />
               </PopOnChange>
             </button>
           </div>
 
           <div className="grid grid-cols-1 gap-3 border-t border-plum-100 pt-6">
             <div className="flex items-start gap-3">
-              <Truck size={18} className="text-plum shrink-0 mt-0.5" />
+              <Truck size={18} className="text-black shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-chocolate">Delivery</p>
-                <p className="text-xs text-plum-400 font-sans">Nationwide delivery across Nigeria. Fee calculated at checkout.</p>
+                <p className="text-xs text-black font-sans">Nationwide delivery across Nigeria. Fee calculated at checkout.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <ShieldCheck size={18} className="text-plum shrink-0 mt-0.5" />
+              <ShieldCheck size={18} className="text-black shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-chocolate">Secure Payment</p>
-                <p className="text-xs text-plum-400 font-sans">Pay safely with Paystack — cards, transfer &amp; more.</p>
+                <p className="text-xs text-black font-sans">Pay safely with Paystack — cards, transfer &amp; more.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <RotateCcw size={18} className="text-plum shrink-0 mt-0.5" />
+              <RotateCcw size={18} className="text-black shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-chocolate">Need Help?</p>
-                <p className="text-xs text-plum-400 font-sans">
-                  <a href={whatsappLink(`Hi NEXORA, I have a question about ${product.name}.`)} target="_blank" rel="noreferrer" className="underline hover:text-plum">
+                <p className="text-xs text-black font-sans">
+                  <a href={whatsappLink(`Hi NEXORA, I have a question about ${product.name}.`)} target="_blank" rel="noreferrer" className="underline hover:text-black">
                     Chat with us on WhatsApp
                   </a>
                 </p>
@@ -191,7 +192,7 @@ export default function ProductDetail() {
 
           <details className="mt-6 border-t border-plum-100 pt-4">
             <summary className="text-sm font-medium text-chocolate cursor-pointer">Product Details</summary>
-            <ul className="mt-3 text-sm text-plum-500 font-sans space-y-1.5">
+            <ul className="mt-3 text-sm text-black font-sans space-y-1.5">
               <li>SKU: {product.sku}</li>
               <li>Category: {category?.name}</li>
               <li>Availability: {availability === "in-stock" ? "In stock" : availability === "low-stock" ? `Low stock (${product.stock} left)` : "Out of stock"}</li>
@@ -220,7 +221,7 @@ export default function ProductDetail() {
           className="shrink-0 w-12 h-12 rounded border border-plum-200 flex items-center justify-center active:scale-90 transition-transform"
         >
           <PopOnChange changeKey={String(isWishlisted)} className="flex">
-            <Heart size={18} className={isWishlisted ? "fill-plum text-plum" : "text-chocolate"} />
+            <Heart size={18} className={isWishlisted ? "fill-plum text-black" : "text-chocolate"} />
           </PopOnChange>
         </button>
         <Button

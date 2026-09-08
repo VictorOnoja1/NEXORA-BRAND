@@ -6,6 +6,8 @@ import type { Product } from "../../types";
 import { getAvailability } from "../../types";
 import { PriceDisplay } from "../ui/PriceDisplay";
 import { Badge } from "../ui/Badge";
+import { ProductImage } from "../ui/ProductImage";
+import { PopOnChange } from "../ui/PopOnChange";
 import { useWishlistStore } from "../../store/wishlistStore";
 import { useCartStore } from "../../store/cartStore";
 import { useUIStore } from "../../store/uiStore";
@@ -45,14 +47,15 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.3) }}
+      whileHover={{ y: -4 }}
     >
       <Link
         to={`/product/${product.slug}`}
         className="group block"
         aria-label={product.name}
       >
-        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-plum-50 mb-3">
-          <img
+        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-plum-50 mb-3 shadow-soft transition-shadow duration-300 group-hover:shadow-elevated">
+          <ProductImage
             src={product.images[0]?.url}
             alt={product.images[0]?.alt || product.name}
             loading="lazy"
@@ -62,7 +65,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             )}
           />
           {secondImage && (
-            <img
+            <ProductImage
               src={secondImage.url}
               alt=""
               loading="lazy"
@@ -82,12 +85,14 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             onClick={handleWishlist}
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
             aria-pressed={isWishlisted}
-            className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-ivory/90 backdrop-blur flex items-center justify-center shadow-soft hover:scale-105 transition-transform"
+            className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-ivory/90 backdrop-blur flex items-center justify-center shadow-soft hover:scale-105 active:scale-90 transition-transform"
           >
-            <Heart
-              size={16}
-              className={isWishlisted ? "fill-plum text-plum" : "text-chocolate"}
-            />
+            <PopOnChange changeKey={String(isWishlisted)} className="flex">
+              <Heart
+                size={16}
+                className={isWishlisted ? "fill-plum text-black" : "text-chocolate"}
+              />
+            </PopOnChange>
           </button>
 
           {availability === "out-of-stock" && (
@@ -99,7 +104,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           <button
             onClick={handleAddToCart}
             disabled={availability === "out-of-stock"}
-            className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-plum text-ivory text-xs font-medium py-2.5 flex items-center justify-center gap-1.5 disabled:bg-plum-200 hidden md:flex"
+            className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 active:!bg-plum-800 transition-transform duration-300 bg-plum text-ivory text-xs font-medium py-2.5 flex items-center justify-center gap-1.5 disabled:bg-plum-200 hidden md:flex"
           >
             <ShoppingBag size={14} />
             Add to Cart
@@ -116,7 +121,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       <button
         onClick={handleAddToCart}
         disabled={availability === "out-of-stock"}
-        className="mt-2 w-full md:hidden border border-plum-200 text-plum text-xs font-medium py-2 rounded flex items-center justify-center gap-1.5 disabled:opacity-40"
+        className="mt-2 w-full md:hidden border border-plum-200 text-black text-xs font-medium py-2 rounded flex items-center justify-center gap-1.5 disabled:opacity-40"
       >
         <ShoppingBag size={13} />
         Add to Cart

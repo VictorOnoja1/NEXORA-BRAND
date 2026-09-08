@@ -76,21 +76,21 @@ export default function AdminLayout() {
         title="NEXORA Storage Sync Bridge"
       />
 
-      {/* Sidebar */}
+      {/* Sidebar — warm white / soft lilac base, per NEXORA 2.0 admin identity. */}
       <aside
-        className={`fixed md:sticky top-0 h-screen w-64 bg-chocolate text-ivory flex flex-col z-40 transition-transform duration-300 ${
+        className={`fixed md:sticky top-0 h-screen w-64 bg-ivory border-r border-champagne-dark/40 text-chocolate flex flex-col z-40 transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="flex items-center justify-between px-5 py-5 border-b border-ivory/10">
+        <div className="flex items-center justify-between px-5 py-5 border-b border-champagne-dark/30">
           <Link to="/" className="flex items-center gap-2.5">
             <img src={logo} alt="NEXORA" className="h-9 w-9 rounded-full object-contain" />
             <div className="leading-none">
-              <p className="font-serif text-base">NEXORA</p>
-              <p className="text-[10px] text-champagne tracking-widest2 uppercase">Admin</p>
+              <p className="font-serif text-base text-chocolate">NEXORA</p>
+              <p className="text-[10px] text-black tracking-widest2 uppercase">Admin</p>
             </div>
           </Link>
-          <button className="md:hidden text-ivory/60" onClick={() => setSidebarOpen(false)} aria-label="Close menu">
+          <button className="md:hidden text-chocolate-muted" onClick={() => setSidebarOpen(false)} aria-label="Close menu">
             <X size={20} />
           </button>
         </div>
@@ -104,7 +104,9 @@ export default function AdminLayout() {
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3.5 py-2.5 rounded text-sm font-medium transition-colors ${
-                  isActive ? "bg-plum text-ivory" : "text-ivory/60 hover:bg-ivory/5 hover:text-ivory"
+                  isActive
+                    ? "bg-champagne text-black"
+                    : "text-chocolate-muted hover:bg-champagne-light hover:text-chocolate"
                 }`
               }
             >
@@ -114,19 +116,19 @@ export default function AdminLayout() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-ivory/10 flex flex-col gap-2.5">
+        <div className="p-4 border-t border-champagne-dark/30 flex flex-col gap-2.5">
           <a
             href={storefrontUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-xs text-ivory/50 hover:text-ivory transition-colors"
+            className="flex items-center gap-2 text-xs text-chocolate-muted hover:text-black transition-colors"
           >
             <ExternalLink size={13} />
             View Storefront
           </a>
           <button
             onClick={logout}
-            className="flex items-center gap-2 text-xs text-ivory/50 hover:text-ivory transition-colors"
+            className="flex items-center gap-2 text-xs text-chocolate-muted hover:text-black transition-colors"
           >
             <LogOut size={13} />
             Log Out
@@ -136,7 +138,7 @@ export default function AdminLayout() {
 
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-chocolate/50 z-30 md:hidden"
+          className="fixed inset-0 bg-chocolate/40 z-30 md:hidden"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />

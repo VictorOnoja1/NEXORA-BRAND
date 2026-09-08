@@ -8,6 +8,7 @@ import { useUIStore } from "../store/uiStore";
 import { formatNaira } from "../lib/format";
 import { siteConfig, whatsappLink } from "../lib/config";
 import { Button } from "../components/ui/Button";
+import { ProductImage } from "../components/ui/ProductImage";
 import { chargeWithPaystack, isPaystackConfigured, generateOrderReference } from "../lib/paystack";
 
 const NIGERIAN_STATES = [
@@ -41,7 +42,7 @@ const emptyForm: FormState = {
 export default function Checkout() {
   const lines = useCartStore((s) => s.lines);
   const subtotal = useCartStore((s) => s.subtotal());
-  const createOrder = useOrderStore((s) => s.createOrder);
+  const submitOrder = useOrderStore((s) => s.submitOrder);
   const products = useProducts();
   const showToast = useUIStore((s) => s.showToast);
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ export default function Checkout() {
     return Object.keys(next).length === 0;
   }
 
-  function finalizeOrder(status: "paid" | "pending", paymentReference?: string) {
+  async function finalizeOrder(status: "paid" | "pending", paymentReference?: string) {
     const orderItems = cartItems.map(({ product, quantity }) => ({
       productId: product!.id,
       name: product!.name,
@@ -83,7 +84,7 @@ export default function Checkout() {
       quantity,
     }));
 
-    const order = createOrder({
+    const result = await submitOrder({
       customer: {
         fullName: form.fullName.trim(),
         phone: form.phone.trim(),
@@ -100,16 +101,31 @@ export default function Checkout() {
       paymentReference,
     });
 
+    setSubmitting(false);
+
+    if (!result.ok) {
+      // The server (checkout Edge Function) rejected the order — e.g. a
+      // race on stock, or a payment reference that failed verification.
+      // The frontend never gets to decide payment succeeded on its own, so
+      // this is a real, user-facing failure, not just a UI hiccup.
+      showToast(result.message, "error");
+      return;
+    }
+
     // Cart is intentionally NOT cleared here — see OrderConfirmation,
     // which clears it after mount. Clearing it here raced with this
     // navigation: Checkout's own "redirect to /cart when empty" guard
     // above could see the newly-emptied cart before the route swap
     // finished committing, bouncing the customer back to /cart instead
-    // of their confirmation.
-    navigate(`/order-confirmation/${order.orderNumber}`);
+    // of their confirmation. The order is passed via router state so
+    // OrderConfirmation can render it immediately without a second
+    // network round trip.
+    navigate(`/order-confirmation/${result.order.orderNumber}`, {
+      state: { order: result.order, email: result.order.customer.email },
+    });
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
@@ -121,8 +137,7 @@ export default function Checkout() {
         amountKobo: Math.round(total * 100),
         reference,
         onSuccess: (ref) => {
-          setSubmitting(false);
-          finalizeOrder("paid", ref);
+          void finalizeOrder("paid", ref);
         },
         onClose: () => {
           setSubmitting(false);
@@ -139,8 +154,7 @@ export default function Checkout() {
       // Paystack isn't configured in this environment. We do NOT fake a
       // successful charge — the order is recorded as pending and the
       // customer is guided to confirm payment with the store directly.
-      setSubmitting(false);
-      finalizeOrder("pending");
+      void finalizeOrder("pending");
     }
   }
 
@@ -150,14 +164,14 @@ export default function Checkout() {
   }
 
   const inputClass = (hasError?: string) =>
-    `w-full border rounded px-4 py-3 text-sm text-chocolate placeholder:text-plum-300 bg-ivory focus:outline-none focus:border-plum transition-colors ${
+    `w-full border rounded px-4 py-3 text-sm text-chocolate placeholder:text-black bg-ivory focus:outline-none focus:border-plum transition-colors ${
       hasError ? "border-red-400" : "border-plum-200"
     }`;
 
   return (
     <div className="max-w-8xl mx-auto px-4 md:px-10 py-8 md:py-12">
       <h1 className="font-serif text-3xl md:text-4xl text-chocolate mb-2">Checkout</h1>
-      <p className="text-sm text-plum-400 mb-8 font-sans flex items-center gap-1.5">
+      <p className="text-sm text-black mb-8 font-sans flex items-center gap-1.5">
         <Lock size={13} /> Your information is safe and only used to fulfil your order.
       </p>
 
@@ -167,17 +181,17 @@ export default function Checkout() {
             <h2 className="font-serif text-xl text-chocolate mb-4">Customer Information</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-plum-500 mb-1.5 block" htmlFor="fullName">Full Name</label>
+                <label className="text-xs font-medium text-black mb-1.5 block" htmlFor="fullName">Full Name</label>
                 <input id="fullName" className={inputClass(errors.fullName)} value={form.fullName} onChange={(e) => updateField("fullName", e.target.value)} placeholder="Jane Doe" />
                 {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
               </div>
               <div>
-                <label className="text-xs font-medium text-plum-500 mb-1.5 block" htmlFor="phone">Phone Number</label>
+                <label className="text-xs font-medium text-black mb-1.5 block" htmlFor="phone">Phone Number</label>
                 <input id="phone" className={inputClass(errors.phone)} value={form.phone} onChange={(e) => updateField("phone", e.target.value)} placeholder="0801 234 5678" />
                 {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
               </div>
               <div className="sm:col-span-2">
-                <label className="text-xs font-medium text-plum-500 mb-1.5 block" htmlFor="email">Email Address</label>
+                <label className="text-xs font-medium text-black mb-1.5 block" htmlFor="email">Email Address</label>
                 <input id="email" type="email" className={inputClass(errors.email)} value={form.email} onChange={(e) => updateField("email", e.target.value)} placeholder="jane@example.com" />
                 {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
               </div>
@@ -188,12 +202,12 @@ export default function Checkout() {
             <h2 className="font-serif text-xl text-chocolate mb-4">Delivery Address</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
-                <label className="text-xs font-medium text-plum-500 mb-1.5 block" htmlFor="address">Street Address</label>
+                <label className="text-xs font-medium text-black mb-1.5 block" htmlFor="address">Street Address</label>
                 <input id="address" className={inputClass(errors.address)} value={form.address} onChange={(e) => updateField("address", e.target.value)} placeholder="12 Admiralty Way, Lekki Phase 1" />
                 {errors.address && <p className="text-xs text-red-500 mt-1">{errors.address}</p>}
               </div>
               <div>
-                <label className="text-xs font-medium text-plum-500 mb-1.5 block" htmlFor="state">State</label>
+                <label className="text-xs font-medium text-black mb-1.5 block" htmlFor="state">State</label>
                 <select id="state" className={inputClass(errors.state)} value={form.state} onChange={(e) => updateField("state", e.target.value)}>
                   <option value="">Select state</option>
                   {NIGERIAN_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -201,12 +215,12 @@ export default function Checkout() {
                 {errors.state && <p className="text-xs text-red-500 mt-1">{errors.state}</p>}
               </div>
               <div>
-                <label className="text-xs font-medium text-plum-500 mb-1.5 block" htmlFor="city">City</label>
+                <label className="text-xs font-medium text-black mb-1.5 block" htmlFor="city">City</label>
                 <input id="city" className={inputClass(errors.city)} value={form.city} onChange={(e) => updateField("city", e.target.value)} placeholder="Lagos" />
                 {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city}</p>}
               </div>
               <div className="sm:col-span-2">
-                <label className="text-xs font-medium text-plum-500 mb-1.5 block" htmlFor="note">Delivery Note (optional)</label>
+                <label className="text-xs font-medium text-black mb-1.5 block" htmlFor="note">Delivery Note (optional)</label>
                 <textarea id="note" rows={2} className={inputClass()} value={form.deliveryNote} onChange={(e) => updateField("deliveryNote", e.target.value)} placeholder="Landmark, gate colour, preferred delivery time…" />
               </div>
             </div>
@@ -219,15 +233,15 @@ export default function Checkout() {
                 <img src="https://assets.paystack.com/assets/img/logo/paystack-icon-colored.svg" alt="" className="w-8 h-8" onError={(e) => (e.currentTarget.style.display = "none")} />
                 <div>
                   <p className="text-sm font-medium text-chocolate">Pay with Paystack</p>
-                  <p className="text-xs text-plum-400">Cards, bank transfer &amp; USSD supported.</p>
+                  <p className="text-xs text-black">Cards, bank transfer &amp; USSD supported.</p>
                 </div>
               </div>
             ) : (
               <div className="flex items-start gap-3 bg-champagne/25 border border-champagne rounded p-4">
-                <AlertTriangle size={18} className="text-plum shrink-0 mt-0.5" />
+                <AlertTriangle size={18} className="text-black shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-chocolate">Online payment isn't connected yet</p>
-                  <p className="text-xs text-plum-500 mt-1 font-sans">
+                  <p className="text-xs text-black mt-1 font-sans">
                     Paystack hasn't been configured for this store. Placing your order will save it as{" "}
                     <strong>pending</strong>, and our team will reach out on WhatsApp to confirm payment.
                   </p>
@@ -244,14 +258,14 @@ export default function Checkout() {
               {cartItems.map(({ product, quantity }) => (
                 <div key={product!.id} className="flex items-center gap-3">
                   <div className="relative shrink-0">
-                    <img src={product!.images[0]?.url} alt="" className="w-12 h-14 rounded object-cover" />
+                    <ProductImage src={product!.images[0]?.url} alt="" className="w-12 h-14 rounded object-cover" />
                     <span className="absolute -top-1.5 -right-1.5 bg-plum text-ivory text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
                       {quantity}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-chocolate line-clamp-1">{product!.name}</p>
-                    <p className="text-xs text-plum-400">{formatNaira(product!.price * quantity)}</p>
+                    <p className="text-xs text-black">{formatNaira(product!.price * quantity)}</p>
                   </div>
                 </div>
               ))}
@@ -274,7 +288,7 @@ export default function Checkout() {
             <Button type="submit" fullWidth size="lg" className="mt-6" disabled={submitting}>
               {submitting ? "Processing…" : "Place Order & Pay"}
             </Button>
-            <p className="text-[11px] text-plum-400 text-center mt-3 font-sans">
+            <p className="text-[11px] text-black text-center mt-3 font-sans">
               Need help ordering?{" "}
               <a href={whatsappLink("Hi NEXORA, I need help placing an order.")} target="_blank" rel="noreferrer" className="underline">
                 Chat with us

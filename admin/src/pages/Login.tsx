@@ -39,7 +39,7 @@ export default function AdminLogin() {
         <div className="flex flex-col items-center mb-8">
           <img src={logo} alt="NEXORA" className="h-14 w-14 rounded-full object-contain mb-3" />
           <p className="font-serif text-2xl text-chocolate">NEXORA</p>
-          <p className="text-[10px] font-sans font-semibold tracking-widest2 uppercase text-plum-400 mt-1">
+          <p className="text-[10px] font-sans font-semibold tracking-widest2 uppercase text-black mt-1">
             Admin Dashboard
           </p>
         </div>
@@ -49,13 +49,13 @@ export default function AdminLogin() {
           className="bg-white border border-plum-100 rounded-lg p-6 md:p-8 shadow-soft"
         >
           <h1 className="font-serif text-xl text-chocolate mb-1">Sign in</h1>
-          <p className="text-sm text-plum-400 font-sans mb-6">
+          <p className="text-sm text-black font-sans mb-6">
             Enter your admin credentials to manage the store.
           </p>
 
           {error && (
-            <div className="flex items-start gap-2 bg-rose/10 border border-rose/40 text-plum-800 text-sm font-sans rounded px-3 py-2.5 mb-5">
-              <ShieldAlert size={16} className="shrink-0 mt-0.5 text-plum" />
+            <div className="flex items-start gap-2 bg-rose/10 border border-rose/40 text-black text-sm font-sans rounded px-3 py-2.5 mb-5">
+              <ShieldAlert size={16} className="shrink-0 mt-0.5 text-black" />
               <span>{error}</span>
             </div>
           )}
@@ -65,7 +65,7 @@ export default function AdminLogin() {
               Username
             </label>
             <div className="relative">
-              <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-plum-300" />
+              <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
               <input
                 id="username"
                 autoFocus
@@ -73,7 +73,7 @@ export default function AdminLogin() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="admin"
-                className="w-full border border-plum-200 rounded pl-9 pr-3 py-2.5 text-sm text-chocolate placeholder:text-plum-300 focus:outline-none focus:border-plum"
+                className="w-full border border-plum-200 rounded pl-9 pr-3 py-2.5 text-sm text-chocolate placeholder:text-black focus:outline-none focus:border-plum"
               />
             </div>
           </div>
@@ -83,7 +83,7 @@ export default function AdminLogin() {
               Password
             </label>
             <div className="relative">
-              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-plum-300" />
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -91,13 +91,13 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full border border-plum-200 rounded pl-9 pr-9 py-2.5 text-sm text-chocolate placeholder:text-plum-300 focus:outline-none focus:border-plum"
+                className="w-full border border-plum-200 rounded pl-9 pr-9 py-2.5 text-sm text-chocolate placeholder:text-black focus:outline-none focus:border-plum"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-plum-300 hover:text-plum"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-black hover:text-black"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -109,7 +109,7 @@ export default function AdminLogin() {
           </Button>
         </form>
 
-        <p className="text-center text-xs text-plum-300 font-sans mt-5">
+        <p className="text-center text-xs text-black font-sans mt-5">
           NEXORA Beauty &amp; Essentials — store management only.
         </p>
       </div>

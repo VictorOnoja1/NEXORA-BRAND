@@ -7,6 +7,7 @@ import { getAvailability } from "../../types";
 import { PriceDisplay } from "../ui/PriceDisplay";
 import { Badge } from "../ui/Badge";
 import { PopOnChange } from "../ui/PopOnChange";
+import { ProductImage } from "../ui/ProductImage";
 import { useWishlistStore } from "../../store/wishlistStore";
 import { useCartStore } from "../../store/cartStore";
 import { useUIStore } from "../../store/uiStore";
@@ -46,6 +47,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.3) }}
+      whileHover={{ y: -4 }}
     >
       <Link
         to={`/product/${product.slug}`}
@@ -53,7 +55,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         aria-label={product.name}
       >
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-plum-50 mb-3 shadow-soft transition-shadow duration-300 group-hover:shadow-elevated">
-          <img
+          <ProductImage
             src={product.images[0]?.url}
             alt={product.images[0]?.alt || product.name}
             loading="lazy"
@@ -63,7 +65,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             )}
           />
           {secondImage && (
-            <img
+            <ProductImage
               src={secondImage.url}
               alt=""
               loading="lazy"
@@ -88,7 +90,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             <PopOnChange changeKey={String(isWishlisted)} className="flex">
               <Heart
                 size={16}
-                className={isWishlisted ? "fill-plum text-plum" : "text-chocolate"}
+                className={isWishlisted ? "fill-plum text-black" : "text-chocolate"}
               />
             </PopOnChange>
           </button>
@@ -119,7 +121,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       <button
         onClick={handleAddToCart}
         disabled={availability === "out-of-stock"}
-        className="mt-2 w-full md:hidden border border-plum-200 text-plum text-xs font-medium py-2 rounded flex items-center justify-center gap-1.5 disabled:opacity-40"
+        className="mt-2 w-full md:hidden border border-plum-200 text-black text-xs font-medium py-2 rounded flex items-center justify-center gap-1.5 disabled:opacity-40"
       >
         <ShoppingBag size={13} />
         Add to Cart

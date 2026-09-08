@@ -5,6 +5,7 @@ import { useProductStore } from "@shared/store/productStore";
 import type { CategorySlug } from "@shared/types";
 import { Button } from "@shared/components/ui/Button";
 import { Modal } from "@shared/components/ui/Modal";
+import { ProductImage } from "@shared/components/ui/ProductImage";
 
 export default function AdminCategories() {
   const categories = useCategoryStore((s) => s.categories);
@@ -48,32 +49,32 @@ export default function AdminCategories() {
 
   return (
     <div>
-      <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="font-serif text-2xl md:text-3xl text-chocolate mb-1">Categories</h1>
-          <p className="text-sm text-plum-400 font-sans">{categories.length} categories</p>
+          <p className="text-sm text-black font-sans">{categories.length} categories</p>
         </div>
-        <Button icon={<Plus size={16} />} onClick={openAdd}>Add Category</Button>
+        <Button icon={<Plus size={16} />} onClick={openAdd} fullWidth className="sm:w-auto">Add Category</Button>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {categories.map((c) => (
           <div key={c.id} className="border border-plum-100 rounded-lg overflow-hidden">
-            <img src={c.image} alt="" className="w-full h-28 object-cover" />
+            <ProductImage src={c.image} alt="" className="w-full h-28 object-cover" />
             <div className="p-4">
               <div className="flex items-center justify-between mb-1">
                 <h3 className="font-serif text-lg text-chocolate">{c.name}</h3>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => openEdit(c.id)} aria-label={`Edit ${c.name}`} className="p-1.5 text-plum-400 hover:text-plum">
+                  <button onClick={() => openEdit(c.id)} aria-label={`Edit ${c.name}`} className="p-1.5 text-black hover:text-black">
                     <Pencil size={14} />
                   </button>
-                  <button onClick={() => setConfirmDelete(c.id)} aria-label={`Delete ${c.name}`} className="p-1.5 text-plum-400 hover:text-red-500">
+                  <button onClick={() => setConfirmDelete(c.id)} aria-label={`Delete ${c.name}`} className="p-1.5 text-black hover:text-red-500">
                     <Trash2 size={14} />
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-plum-400 mb-2 font-sans">{c.descriptor}</p>
-              <p className="text-xs text-plum-300">{productCountFor(c.slug)} products</p>
+              <p className="text-xs text-black mb-2 font-sans">{c.descriptor}</p>
+              <p className="text-xs text-black">{productCountFor(c.slug)} products</p>
             </div>
           </div>
         ))}
@@ -82,15 +83,15 @@ export default function AdminCategories() {
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? "Edit Category" : "Add Category"}>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="text-xs font-medium text-plum-500 mb-1.5 block" htmlFor="cat-name">Name</label>
+            <label className="text-xs font-medium text-black mb-1.5 block" htmlFor="cat-name">Name</label>
             <input id="cat-name" required className="w-full border border-plum-200 rounded px-4 py-2.5 text-sm focus:outline-none focus:border-plum" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs font-medium text-plum-500 mb-1.5 block" htmlFor="cat-desc">Descriptor</label>
+            <label className="text-xs font-medium text-black mb-1.5 block" htmlFor="cat-desc">Descriptor</label>
             <input id="cat-desc" className="w-full border border-plum-200 rounded px-4 py-2.5 text-sm focus:outline-none focus:border-plum" value={form.descriptor} onChange={(e) => setForm({ ...form, descriptor: e.target.value })} placeholder="Short tagline shown on the card" />
           </div>
           <div>
-            <label className="text-xs font-medium text-plum-500 mb-1.5 block" htmlFor="cat-img">Image URL</label>
+            <label className="text-xs font-medium text-black mb-1.5 block" htmlFor="cat-img">Image URL</label>
             <input id="cat-img" className="w-full border border-plum-200 rounded px-4 py-2.5 text-sm focus:outline-none focus:border-plum" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
           </div>
           <Button type="submit" fullWidth>{editingId ? "Save Changes" : "Add Category"}</Button>
@@ -98,7 +99,7 @@ export default function AdminCategories() {
       </Modal>
 
       <Modal open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Delete category?">
-        <p className="text-sm text-plum-500 font-sans mb-6">
+        <p className="text-sm text-black font-sans mb-6">
           Are you sure you want to delete <strong>{categoryToDelete?.name}</strong>? Products in this category will remain but won't be grouped under it.
         </p>
         <div className="flex gap-3">

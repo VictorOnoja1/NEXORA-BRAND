@@ -16,7 +16,7 @@ export function QuantitySelector({ value, onChange, max = 99, size = "md" }: Qua
         type="button"
         aria-label="Decrease quantity"
         onClick={() => onChange(Math.max(1, value - 1))}
-        className={`${dim} flex items-center justify-center text-plum hover:bg-plum-50 active:scale-90 transition-transform disabled:opacity-30 disabled:active:scale-100`}
+        className={`${dim} flex items-center justify-center text-black hover:bg-plum-50 active:scale-90 transition-transform disabled:opacity-30 disabled:active:scale-100`}
         disabled={value <= 1}
       >
         <Minus size={14} />
@@ -28,7 +28,7 @@ export function QuantitySelector({ value, onChange, max = 99, size = "md" }: Qua
         type="button"
         aria-label="Increase quantity"
         onClick={() => onChange(Math.min(max, value + 1))}
-        className={`${dim} flex items-center justify-center text-plum hover:bg-plum-50 active:scale-90 transition-transform disabled:opacity-30 disabled:active:scale-100`}
+        className={`${dim} flex items-center justify-center text-black hover:bg-plum-50 active:scale-90 transition-transform disabled:opacity-30 disabled:active:scale-100`}
         disabled={value >= max}
       >
         <Plus size={14} />

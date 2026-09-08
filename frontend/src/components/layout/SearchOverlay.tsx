@@ -46,14 +46,14 @@ export function SearchOverlay() {
           <div className="max-w-3xl mx-auto px-5 pt-6 pb-10 h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6">
               <div className="relative flex-1">
-                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-plum-300" />
+                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-black" />
                 <input
                   autoFocus
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search products..."
-                  className="w-full bg-plum-50/60 border border-plum-100 rounded-full pl-11 pr-4 py-3.5 text-sm text-chocolate placeholder:text-plum-300 focus:outline-none focus:border-plum"
+                  className="w-full bg-plum-50/60 border border-plum-100 rounded-full pl-11 pr-4 py-3.5 text-sm text-chocolate placeholder:text-black focus:outline-none focus:border-plum"
                 />
               </div>
               <button onClick={close} aria-label="Close search" className="p-2 text-chocolate">
@@ -63,7 +63,7 @@ export function SearchOverlay() {
 
             {query.trim().length < 2 && (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest2 text-plum-400 mb-3">
+                <p className="text-xs font-semibold uppercase tracking-widest2 text-black mb-3">
                   Popular Categories
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -85,7 +85,7 @@ export function SearchOverlay() {
 
             {query.trim().length >= 2 && results.length === 0 && (
               <div className="text-center py-16">
-                <p className="text-plum-400 font-sans text-sm">
+                <p className="text-black font-sans text-sm">
                   No products found for &ldquo;{query}&rdquo;. Try a different search term.
                 </p>
               </div>
@@ -102,7 +102,7 @@ export function SearchOverlay() {
                     <img src={p.images[0]?.url} alt="" className="w-14 h-14 rounded object-cover" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-chocolate line-clamp-1">{p.name}</p>
-                      <p className="text-xs text-plum-400">{formatNaira(p.price)}</p>
+                      <p className="text-xs text-black">{formatNaira(p.price)}</p>
                     </div>
                   </button>
                 ))}

@@ -4,6 +4,7 @@ import { useOrderStore } from "@shared/store/orderStore";
 import { formatNaira } from "@shared/lib/format";
 import type { OrderStatus } from "@shared/types";
 import { useUIStore } from "@shared/store/uiStore";
+import { ProductImage } from "@shared/components/ui/ProductImage";
 
 const STATUS_OPTIONS: OrderStatus[] = ["pending", "paid", "processing", "shipped", "delivered", "cancelled"];
 
@@ -17,17 +18,17 @@ export default function AdminOrderDetail() {
 
   return (
     <div className="max-w-3xl">
-      <Link to="/orders" className="inline-flex items-center gap-1 text-sm text-plum-400 hover:text-plum mb-4">
+      <Link to="/orders" className="inline-flex items-center gap-1 text-sm text-black hover:text-black mb-4">
         <ChevronLeft size={15} /> Back to Orders
       </Link>
 
       <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
         <div>
           <h1 className="font-serif text-2xl md:text-3xl text-chocolate mb-1">{order.orderNumber}</h1>
-          <p className="text-sm text-plum-400 font-sans">Placed {new Date(order.createdAt).toLocaleString()}</p>
+          <p className="text-sm text-black font-sans">Placed {new Date(order.createdAt).toLocaleString()}</p>
         </div>
         <div className="flex items-center gap-2">
-          <label htmlFor="status" className="text-xs text-plum-400">Status</label>
+          <label htmlFor="status" className="text-xs text-black">Status</label>
           <select
             id="status"
             value={order.status}
@@ -45,7 +46,7 @@ export default function AdminOrderDetail() {
       <div className="grid sm:grid-cols-2 gap-4 mb-6">
         <div className="border border-plum-100 rounded-lg p-5">
           <h2 className="text-sm font-semibold text-chocolate mb-3">Customer</h2>
-          <p className="text-sm text-plum-500 font-sans leading-relaxed">
+          <p className="text-sm text-black font-sans leading-relaxed">
             {order.customer.fullName}<br />
             {order.customer.phone}<br />
             {order.customer.email}
@@ -53,7 +54,7 @@ export default function AdminOrderDetail() {
         </div>
         <div className="border border-plum-100 rounded-lg p-5">
           <h2 className="text-sm font-semibold text-chocolate mb-3">Delivery Address</h2>
-          <p className="text-sm text-plum-500 font-sans leading-relaxed">
+          <p className="text-sm text-black font-sans leading-relaxed">
             {order.customer.address}<br />
             {order.customer.city}, {order.customer.state}
             {order.customer.deliveryNote && <><br /><em>{order.customer.deliveryNote}</em></>}
@@ -66,10 +67,10 @@ export default function AdminOrderDetail() {
         <div className="flex flex-col gap-3">
           {order.items.map((item) => (
             <div key={item.productId} className="flex items-center gap-3">
-              <img src={item.image} alt="" className="w-12 h-14 rounded object-cover shrink-0" />
+              <ProductImage src={item.image} alt="" className="w-12 h-14 rounded object-cover shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-chocolate line-clamp-1">{item.name}</p>
-                <p className="text-xs text-plum-400">Qty {item.quantity} × {formatNaira(item.price)}</p>
+                <p className="text-xs text-black">Qty {item.quantity} × {formatNaira(item.price)}</p>
               </div>
               <p className="text-sm text-chocolate font-medium">{formatNaira(item.price * item.quantity)}</p>
             </div>
@@ -85,7 +86,7 @@ export default function AdminOrderDetail() {
       {order.paymentReference && (
         <div className="border border-plum-100 rounded-lg p-5">
           <h2 className="text-sm font-semibold text-chocolate mb-2">Payment</h2>
-          <p className="text-sm text-plum-500 font-sans">Reference: {order.paymentReference}</p>
+          <p className="text-sm text-black font-sans">Reference: {order.paymentReference}</p>
         </div>
       )}
     </div>

@@ -59,7 +59,7 @@ export default function Cart() {
               ))}
             </AnimatePresence>
           </div>
-          <Link to="/shop" className="inline-block mt-5 text-sm font-medium text-plum hover:underline">
+          <Link to="/shop" className="inline-block mt-5 text-sm font-medium text-black hover:underline">
             ← Continue Shopping
           </Link>
         </div>
@@ -77,7 +77,7 @@ export default function Cart() {
                 <span>{deliveryFee === 0 ? "Free" : formatNaira(deliveryFee)}</span>
               </div>
               {!qualifiesFreeDelivery && (
-                <p className="text-xs text-plum-400">
+                <p className="text-xs text-black">
                   Add {formatNaira(siteConfig.freeDeliveryThreshold - subtotal)} more for free delivery.
                 </p>
               )}

@@ -27,10 +27,10 @@ export default function Account() {
     <div className="max-w-3xl mx-auto px-4 md:px-0 py-10 md:py-16">
       <div className="text-center mb-10">
         <div className="w-14 h-14 rounded-full bg-blush/50 flex items-center justify-center mx-auto mb-4">
-          <UserCircle2 size={26} className="text-plum" />
+          <UserCircle2 size={26} className="text-black" />
         </div>
         <h1 className="font-serif text-3xl text-chocolate mb-2">My Account</h1>
-        <p className="text-sm text-plum-400 font-sans max-w-sm mx-auto">
+        <p className="text-sm text-black font-sans max-w-sm mx-auto">
           Customer accounts with sign-in aren't connected yet. In the meantime, look up your recent
           orders by the email you checked out with.
         </p>
@@ -49,7 +49,7 @@ export default function Account() {
           value={lookupEmail}
           onChange={(e) => setLookupEmail(e.target.value)}
           placeholder="you@example.com"
-          className="flex-1 border border-plum-200 rounded px-4 py-3 text-sm text-chocolate placeholder:text-plum-300 focus:outline-none focus:border-plum"
+          className="flex-1 border border-plum-200 rounded px-4 py-3 text-sm text-chocolate placeholder:text-black focus:outline-none focus:border-plum"
         />
         <Button type="submit">Find Orders</Button>
       </form>
@@ -58,8 +58,8 @@ export default function Account() {
         <div>
           {matchingOrders.length === 0 ? (
             <div className="text-center py-10">
-              <Package size={24} className="text-plum-300 mx-auto mb-3" />
-              <p className="text-sm text-plum-400 font-sans">No orders found for that email on this device.</p>
+              <Package size={24} className="text-black mx-auto mb-3" />
+              <p className="text-sm text-black font-sans">No orders found for that email on this device.</p>
             </div>
           ) : (
             <div className="flex flex-col divide-y divide-plum-100 border-t border-b border-plum-100">
@@ -71,11 +71,11 @@ export default function Account() {
                 >
                   <div>
                     <p className="text-sm font-medium text-chocolate">{o.orderNumber}</p>
-                    <p className="text-xs text-plum-400">{new Date(o.createdAt).toLocaleDateString()} · {o.items.length} item{o.items.length === 1 ? "" : "s"}</p>
+                    <p className="text-xs text-black">{new Date(o.createdAt).toLocaleDateString()} · {o.items.length} item{o.items.length === 1 ? "" : "s"}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-chocolate">{formatNaira(o.total)}</p>
-                    <span className="text-[10px] uppercase tracking-wide text-plum-400">{o.status}</span>
+                    <span className="text-[10px] uppercase tracking-wide text-black">{o.status}</span>
                   </div>
                 </Link>
               ))}

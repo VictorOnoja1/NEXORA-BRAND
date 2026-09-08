@@ -71,7 +71,7 @@ export default function AdminSubscribers() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="font-serif text-2xl md:text-3xl text-chocolate mb-1">Newsletter Subscribers</h1>
-          <p className="text-sm text-plum-400 font-sans">
+          <p className="text-sm text-black font-sans">
             Manage your newsletter audience, export email lists, and monitor subscription status.
           </p>
         </div>
@@ -120,13 +120,13 @@ export default function AdminSubscribers() {
       {/* CONTROLS */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div className="relative flex-1 max-w-sm">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-plum-300" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by email address..."
-            className="w-full bg-ivory border border-plum-200 rounded pl-9 pr-3 py-2 text-sm text-chocolate placeholder:text-plum-300 focus:outline-none focus:border-plum"
+            className="w-full bg-ivory border border-plum-200 rounded pl-9 pr-3 py-2 text-sm text-chocolate placeholder:text-black focus:outline-none focus:border-plum"
           />
         </div>
 
@@ -138,7 +138,7 @@ export default function AdminSubscribers() {
               className={`px-3 py-1 text-xs font-medium rounded capitalize transition-colors ${
                 filterStatus === st
                   ? "bg-plum text-ivory shadow-xs"
-                  : "text-plum-400 hover:text-chocolate"
+                  : "text-black hover:text-chocolate"
               }`}
             >
               {st}
@@ -151,7 +151,7 @@ export default function AdminSubscribers() {
       <div className="border border-plum-100 rounded-lg overflow-hidden overflow-x-auto bg-ivory">
         <table className="w-full text-sm min-w-[600px]">
           <thead>
-            <tr className="text-left text-xs text-plum-400 border-b border-plum-100 bg-blush/10">
+            <tr className="text-left text-xs text-black border-b border-plum-100 bg-blush/10">
               <th className="px-5 py-3 font-medium">Email Address</th>
               <th className="px-5 py-3 font-medium">Status</th>
               <th className="px-5 py-3 font-medium">Subscribed Date</th>
@@ -178,7 +178,7 @@ export default function AdminSubscribers() {
                     {sub.status === "active" ? "Active" : "Unsubscribed"}
                   </span>
                 </td>
-                <td className="px-5 py-3.5 text-plum-400 font-sans text-xs">
+                <td className="px-5 py-3.5 text-black font-sans text-xs">
                   {new Date(sub.subscribedAt).toLocaleDateString(undefined, {
                     year: "numeric",
                     month: "short",
@@ -194,7 +194,7 @@ export default function AdminSubscribers() {
                         toggleStatus(sub.id);
                         showToast(`Status changed to ${sub.status === "active" ? "unsubscribed" : "active"}`, "info");
                       }}
-                      className="text-xs text-plum-400 hover:text-plum underline transition-colors"
+                      className="text-xs text-black hover:text-black underline transition-colors"
                     >
                       {sub.status === "active" ? "Mark Unsubscribed" : "Mark Active"}
                     </button>
@@ -218,9 +218,9 @@ export default function AdminSubscribers() {
         </table>
         {filteredSubscribers.length === 0 && (
           <div className="py-12 text-center">
-            <Mail size={32} className="mx-auto text-plum-200 mb-2" />
+            <Mail size={32} className="mx-auto text-black mb-2" />
             <p className="text-sm font-medium text-chocolate">No subscribers found</p>
-            <p className="text-xs text-plum-400 mt-1 font-sans">
+            <p className="text-xs text-black mt-1 font-sans">
               {search ? `No subscriber matched "${search}"` : "Subscribers will appear here when visitors sign up."}
             </p>
           </div>

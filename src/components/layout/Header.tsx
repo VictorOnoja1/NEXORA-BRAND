@@ -1,8 +1,8 @@
 import { Link, NavLink } from "react-router-dom";
 import { Menu, Search, Heart, User, ShoppingBag } from "lucide-react";
-import { useCartStore } from "../../store/cartStore";
+import { useCartCount } from "../../store/cartStore";
 import { useUIStore } from "../../store/uiStore";
-import { useWishlistStore } from "../../store/wishlistStore";
+import { useWishlistCount } from "../../store/wishlistStore";
 import { CountBadge } from "../ui/CountBadge";
 import logo from "../../assets/nexora-logo.png";
 
@@ -15,8 +15,8 @@ const desktopLinks = [
 ];
 
 export function Header() {
-  const totalItems = useCartStore((s) => s.totalItems());
-  const wishlistCount = useWishlistStore((s) => s.ids.length);
+  const totalItems = useCartCount();
+  const wishlistCount = useWishlistCount();
   const setMobileMenuOpen = useUIStore((s) => s.setMobileMenuOpen);
   const setSearchOpen = useUIStore((s) => s.setSearchOpen);
 
@@ -54,7 +54,7 @@ export function Header() {
           <img src={logo} alt="NEXORA Beauty & Essentials" className="h-14 w-14 object-contain rounded-full" />
           <div className="flex flex-col leading-none">
             <span className="font-serif text-2xl text-chocolate tracking-wide">NEXORA</span>
-            <span className="text-[10px] tracking-widest2 text-plum-400 uppercase">Beauty &amp; Essentials</span>
+            <span className="text-[10px] tracking-widest2 text-black uppercase">Beauty &amp; Essentials</span>
           </div>
         </Link>
 
@@ -66,7 +66,7 @@ export function Header() {
               end={link.to === "/"}
               className={({ isActive }) =>
                 `text-sm font-medium tracking-wide transition-colors ${
-                  isActive ? "text-plum" : "text-chocolate/80 hover:text-plum"
+                  isActive ? "text-black" : "text-chocolate/80 hover:text-black"
                 }`
               }
             >
@@ -79,14 +79,14 @@ export function Header() {
           <button
             aria-label="Search"
             onClick={() => setSearchOpen(true)}
-            className="text-chocolate hover:text-plum hover:-translate-y-0.5 transition-all"
+            className="text-chocolate hover:text-black hover:-translate-y-0.5 transition-all"
           >
             <Search size={20} />
           </button>
           <Link
             to="/wishlist"
             aria-label="Wishlist"
-            className="relative text-chocolate hover:text-plum hover:-translate-y-0.5 transition-all"
+            className="relative text-chocolate hover:text-black hover:-translate-y-0.5 transition-all"
           >
             <Heart size={20} />
             <CountBadge
@@ -97,14 +97,14 @@ export function Header() {
           <Link
             to="/account"
             aria-label="Account"
-            className="text-chocolate hover:text-plum hover:-translate-y-0.5 transition-all"
+            className="text-chocolate hover:text-black hover:-translate-y-0.5 transition-all"
           >
             <User size={20} />
           </Link>
           <Link
             to="/cart"
             aria-label="Cart"
-            className="relative text-chocolate hover:text-plum hover:-translate-y-0.5 transition-all"
+            className="relative text-chocolate hover:text-black hover:-translate-y-0.5 transition-all"
           >
             <ShoppingBag size={20} />
             <CountBadge

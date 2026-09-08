@@ -12,12 +12,12 @@ const values = [
 export default function About() {
   return (
     <div>
-      <section className="relative bg-plum overflow-hidden">
+      <section className="relative bg-champagne-light overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 py-20 md:py-28 text-center relative z-10">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-xs font-semibold tracking-widest2 uppercase text-champagne mb-4"
+            className="text-xs font-semibold tracking-widest2 uppercase text-black mb-4"
           >
             About NEXORA
           </motion.p>
@@ -25,7 +25,7 @@ export default function About() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-serif text-3xl md:text-5xl text-ivory leading-tight"
+            className="font-serif text-3xl md:text-5xl text-chocolate leading-tight"
           >
             A modern beauty and lifestyle brand, built on trust.
           </motion.h1>
@@ -34,13 +34,13 @@ export default function About() {
 
       <section className="max-w-3xl mx-auto px-6 py-14 md:py-20">
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-plum-600 leading-relaxed font-sans text-base mb-6">
+          <p className="text-black leading-relaxed font-sans text-base mb-6">
             NEXORA Beauty &amp; Essentials is a modern beauty and lifestyle commerce brand focused on
             helping customers discover quality, stylish and accessible essentials in one convenient
             place. From wigs and hair to skincare, fragrance, jewellery and fashion — we bring together
             the products that help you look and feel like the most confident version of yourself.
           </p>
-          <p className="text-plum-600 leading-relaxed font-sans text-base">
+          <p className="text-black leading-relaxed font-sans text-base">
             We believe premium doesn't have to mean intimidating. Every product on NEXORA is chosen
             with intention, every order is handled with care, and real human support is always a
             message away. This is shopping built around <em className="font-display italic">your style</em> and{" "}
@@ -77,10 +77,10 @@ export default function About() {
               className="text-center"
             >
               <div className="w-12 h-12 rounded-full bg-blush/60 flex items-center justify-center mx-auto mb-4">
-                <v.icon size={20} className="text-plum" />
+                <v.icon size={20} className="text-black" />
               </div>
               <h3 className="font-serif text-lg text-chocolate mb-1.5">{v.title}</h3>
-              <p className="text-xs text-plum-400 font-sans">{v.desc}</p>
+              <p className="text-xs text-black font-sans">{v.desc}</p>
             </motion.div>
           ))}
         </div>
