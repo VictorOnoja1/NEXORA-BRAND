@@ -73,7 +73,7 @@ export default function Checkout() {
     return Object.keys(next).length === 0;
   }
 
-  function finalizeOrder(status: "paid" | "pending", paymentReference?: string) {
+  async function finalizeOrder(status: "paid" | "pending", paymentReference?: string) {
     const orderItems = cartItems.map(({ product, quantity }) => ({
       productId: product!.id,
       name: product!.name,
@@ -82,7 +82,7 @@ export default function Checkout() {
       quantity,
     }));
 
-    const order = createOrder({
+    const order = await createOrder({
       customer: {
         fullName: form.fullName.trim(),
         phone: form.phone.trim(),

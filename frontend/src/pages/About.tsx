@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { ShieldCheck, Sparkles, Heart, Truck } from "lucide-react";
-import heroImg from "../assets/placeholders/hero.jpg";
 
 const values = [
   { icon: Sparkles, title: "Elegant", desc: "Polished presentation without feeling distant." },
@@ -51,8 +50,8 @@ export default function About() {
 
       <section className="relative">
         <div className="max-w-8xl mx-auto px-5 md:px-10">
-          <div className="relative rounded-xl overflow-hidden aspect-[16/7]">
-            <img src={heroImg} alt="NEXORA lifestyle" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="relative rounded-xl overflow-hidden aspect-[16/7] bg-gradient-to-br from-champagne via-blush to-plum-300 flex items-center justify-center">
+            <Heart size={140} strokeWidth={0.75} className="text-plum-600/25" />
           </div>
         </div>
       </section>

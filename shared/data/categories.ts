@@ -1,70 +1,66 @@
 import type { Category } from "../types";
 
-import wigsHair from "../assets/placeholders/cat-wigs-hair.jpg";
-import hairCare from "../assets/placeholders/cat-hair-care.jpg";
-import skincare from "../assets/placeholders/cat-skincare-cosmetics.jpg";
-import perfumes from "../assets/placeholders/cat-perfumes.jpg";
-import jewellery from "../assets/placeholders/cat-jewellery.jpg";
-import attachments from "../assets/placeholders/cat-attachments.jpg";
-import fashion from "../assets/placeholders/cat-fashion.jpg";
-import accessories from "../assets/placeholders/cat-accessories.jpg";
-
+// No dedicated category photography exists yet — CategoryCard renders an
+// on-brand gradient + icon tile when `image` is empty, so these intentionally
+// ship with no image rather than pointing at a generic stock photo. Set a
+// real "/images/categories/<slug>.jpg" here (and upload the file) once real
+// photos exist for a category.
 export const categories: Category[] = [
   {
     id: "cat-1",
     slug: "wigs-hair",
     name: "Wigs & Hair",
     descriptor: "Elevate your everyday look.",
-    image: wigsHair,
+    image: "",
   },
   {
     id: "cat-2",
     slug: "hair-care",
     name: "Hair Care",
     descriptor: "Nourish, strengthen, shine.",
-    image: hairCare,
+    image: "",
   },
   {
     id: "cat-3",
     slug: "skincare-cosmetics",
     name: "Skincare & Cosmetics",
     descriptor: "Glow that feels like you.",
-    image: skincare,
+    image: "",
   },
   {
     id: "cat-4",
     slug: "perfumes",
     name: "Perfumes",
     descriptor: "A signature scent, always.",
-    image: perfumes,
+    image: "",
   },
   {
     id: "cat-5",
     slug: "jewellery",
     name: "Jewellery",
     descriptor: "Finishing touches that shine.",
-    image: jewellery,
+    image: "",
   },
   {
     id: "cat-6",
     slug: "attachments",
     name: "Attachments",
     descriptor: "Effortless length and volume.",
-    image: attachments,
+    image: "",
   },
   {
     id: "cat-7",
     slug: "fashion",
     name: "Fashion",
     descriptor: "Style that speaks for you.",
-    image: fashion,
+    image: "",
   },
   {
     id: "cat-8",
     slug: "accessories",
     name: "Accessories",
     descriptor: "Small details, big confidence.",
-    image: accessories,
+    image: "",
   },
 ];
 

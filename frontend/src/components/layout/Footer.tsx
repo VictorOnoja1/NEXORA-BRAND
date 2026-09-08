@@ -12,10 +12,10 @@ export function Footer() {
   const subscribe = useSubscriberStore((s) => s.subscribe);
   const showToast = useUIStore((s) => s.showToast);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    const res = subscribe(email);
+    const res = await subscribe(email);
     showToast(res.message, res.success ? "success" : "error");
     if (res.success) {
       setEmail("");

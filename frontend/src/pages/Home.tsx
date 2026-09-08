@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowRight, ShieldCheck, Truck, MessageCircle, Sparkles } from "lucide-react";
+import { ArrowRight, ShieldCheck, Truck, MessageCircle, Sparkles, Shirt } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { ProductCard } from "../components/product/ProductCard";
 import { CategoryCard } from "../components/product/CategoryCard";
@@ -9,7 +9,6 @@ import { useCategories } from "../store/categoryStore";
 import { useNewArrivals, useBestSellers, useFeaturedProducts } from "../store/productStore";
 import { useSubscriberStore } from "../store/subscriberStore";
 import { useUIStore } from "../store/uiStore";
-import editorialImg from "../assets/placeholders/editorial-banner.jpg";
 
 // Real NEXORA product photography (not stock placeholders) — a small rotating
 // set per category, all sourced from actual uploaded product photos already
@@ -173,10 +172,10 @@ export default function Home() {
   const subscribe = useSubscriberStore((s) => s.subscribe);
   const showToast = useUIStore((s) => s.showToast);
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsletterEmail) return;
-    const res = subscribe(newsletterEmail);
+    const res = await subscribe(newsletterEmail);
     showToast(res.message, res.success ? "success" : "error");
     if (res.success) {
       setNewsletterEmail("");
@@ -292,13 +291,8 @@ export default function Home() {
       {/* EDITORIAL BANNER */}
       <section className="relative">
         <div className="max-w-8xl mx-auto px-5 md:px-10 py-4">
-          <motion.div {...fadeUp} className="relative rounded-xl overflow-hidden min-h-[280px] md:min-h-[380px] flex items-center">
-            <img
-              src={editorialImg}
-              alt="NEXORA fashion edit"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-chocolate/75 via-chocolate/30 to-transparent" />
+          <motion.div {...fadeUp} className="relative rounded-xl overflow-hidden min-h-[280px] md:min-h-[380px] flex items-center bg-gradient-to-br from-plum-600 via-plum-700 to-chocolate">
+            <Shirt size={220} strokeWidth={0.75} className="absolute -right-8 -bottom-10 text-ivory/10 pointer-events-none" />
             <div className="relative z-10 px-8 md:px-16 max-w-md">
               <p className="text-xs font-semibold tracking-widest2 uppercase text-champagne mb-3">
                 The Edit

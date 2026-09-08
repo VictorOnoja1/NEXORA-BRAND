@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { ChevronLeft, Sparkles, UploadCloud } from "lucide-react";
+import { ChevronLeft, UploadCloud } from "lucide-react";
 import { useProductStore } from "../../store/productStore";
 import { useCategories } from "../../store/categoryStore";
 import { Button } from "../../components/ui/Button";
@@ -18,12 +18,6 @@ function fileExtension(name: string): string {
   const match = /\.([a-z0-9]+)$/i.exec(name);
   return match ? match[1].toLowerCase() : "jpg";
 }
-
-const placeholderPool = import.meta.glob<{ default: string }>(
-  "../../assets/placeholders/prod-*.jpg",
-  { eager: true }
-);
-const placeholderUrls = Object.values(placeholderPool).map((m) => m.default);
 
 interface FormState {
   name: string;
@@ -88,7 +82,7 @@ export default function AdminProductForm() {
           active: existing.active,
           imageUrl: existing.images[0]?.url || "",
         }
-      : { ...empty, imageUrl: placeholderUrls[0] || "" }
+      : { ...empty }
   );
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -159,7 +153,7 @@ export default function AdminProductForm() {
       description: form.description || form.shortDescription,
       featured: form.featured,
       isNew: form.isNew,
-      images: [{ id: "img-1", url: form.imageUrl || placeholderUrls[0], alt: form.name }],
+      images: [{ id: "img-1", url: form.imageUrl, alt: form.name }],
     };
 
     setSubmitting(true);
@@ -197,7 +191,7 @@ export default function AdminProductForm() {
           <h2 className="text-sm font-semibold text-chocolate mb-4">Image</h2>
           <div className="flex items-start gap-4">
             <ProductImage
-              src={form.imageUrl || placeholderUrls[0]}
+              src={form.imageUrl}
               alt=""
               className="w-24 h-28 rounded-lg object-cover bg-plum-50 shrink-0"
               onLoadError={setImageBroken}
@@ -221,13 +215,6 @@ export default function AdminProductForm() {
                 >
                   {uploading ? "Uploading…" : "Upload Image"}
                 </Button>
-                <button
-                  type="button"
-                  onClick={() => update("imageUrl", placeholderUrls[Math.floor(Math.random() * placeholderUrls.length)])}
-                  className="inline-flex items-center gap-1.5 text-xs text-black hover:underline"
-                >
-                  <Sparkles size={12} /> Use a placeholder instead
-                </button>
               </div>
               {uploadError && (
                 <p className="text-[11px] text-red-500 mb-2 font-sans">{uploadError}</p>
