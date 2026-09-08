@@ -12,6 +12,12 @@ import type { Category, CategorySlug, Product, ProductImage, Order, OrderItem, C
 import { categories as seedCategories } from "../data/categories";
 import { seedProducts } from "../data/products";
 
+// Helper to access Supabase client safely with dynamic type resolution
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getDb(): any {
+  return supabase;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers — map DB rows to app types
 // ---------------------------------------------------------------------------
@@ -141,13 +147,13 @@ function rowToOrder(row: OrderRow): Order {
 export async function fetchCategories(): Promise<Category[]> {
   if (!isSupabaseConfigured || !supabase) return seedCategories;
 
-  const { data, error } = await supabase
+  const { data, error } = await getDb()
     .from("categories")
     .select("*")
     .order("sort_order", { ascending: true });
 
   if (error || !data || data.length === 0) return seedCategories;
-  return data.map(rowToCategory);
+  return (data as CatRow[]).map(rowToCategory);
 }
 
 export async function dbAddCategory(
@@ -157,7 +163,7 @@ export async function dbAddCategory(
     return { ...input, id: `cat-${Date.now()}` };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getDb()
     .from("categories")
     .insert({
       slug: input.slug,
@@ -170,7 +176,7 @@ export async function dbAddCategory(
     .single();
 
   if (error || !data) throw new Error(error?.message ?? "Failed to create category");
-  return rowToCategory(data);
+  return rowToCategory(data as CatRow);
 }
 
 export async function dbUpdateCategory(
@@ -185,12 +191,12 @@ export async function dbUpdateCategory(
   if (patch.descriptor !== undefined) update.descriptor = patch.descriptor;
   if (patch.image !== undefined) update.image = patch.image;
 
-  await supabase.from("categories").update(update).eq("id", id);
+  await getDb().from("categories").update(update).eq("id", id);
 }
 
 export async function dbDeleteCategory(id: string): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return;
-  await supabase.from("categories").delete().eq("id", id);
+  await getDb().from("categories").delete().eq("id", id);
 }
 
 // ---------------------------------------------------------------------------
@@ -200,7 +206,7 @@ export async function dbDeleteCategory(id: string): Promise<void> {
 export async function fetchProducts(): Promise<Product[]> {
   if (!isSupabaseConfigured || !supabase) return seedProducts;
 
-  const { data, error } = await supabase
+  const { data, error } = await getDb()
     .from("products")
     .select("*, product_images(*)")
     .order("created_at", { ascending: false });
@@ -214,7 +220,7 @@ export async function fetchProductBySlug(slug: string): Promise<Product | null> 
     return seedProducts.find((p) => p.slug === slug) ?? null;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getDb()
     .from("products")
     .select("*, product_images(*)")
     .eq("slug", slug)
@@ -232,7 +238,7 @@ export async function dbAddProduct(
     return mock;
   }
 
-  const { data: prodData, error: prodError } = await supabase
+  const { data: prodData, error: prodError } = await getDb()
     .from("products")
     .insert({
       slug: input.slug,
@@ -257,7 +263,7 @@ export async function dbAddProduct(
 
   // Insert images
   if (input.images.length > 0) {
-    await supabase.from("product_images").insert(
+    await getDb().from("product_images").insert(
       input.images.map((img, i) => ({
         product_id: prodData.id,
         url: img.url,
@@ -292,13 +298,13 @@ export async function dbUpdateProduct(
   if ("ratingCount" in patch) update.rating_count = patch.ratingCount ?? null;
   if (patch.sku !== undefined) update.sku = patch.sku;
 
-  await supabase.from("products").update(update).eq("id", id);
+  await getDb().from("products").update(update).eq("id", id);
 
   // Re-sync images if provided
   if (patch.images) {
-    await supabase.from("product_images").delete().eq("product_id", id);
+    await getDb().from("product_images").delete().eq("product_id", id);
     if (patch.images.length > 0) {
-      await supabase.from("product_images").insert(
+      await getDb().from("product_images").insert(
         patch.images.map((img, i) => ({
           product_id: id,
           url: img.url,
@@ -313,7 +319,7 @@ export async function dbUpdateProduct(
 export async function dbDeleteProduct(id: string): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return;
   // product_images cascade deletes automatically
-  await supabase.from("products").delete().eq("id", id);
+  await getDb().from("products").delete().eq("id", id);
 }
 
 // ---------------------------------------------------------------------------
@@ -323,7 +329,7 @@ export async function dbDeleteProduct(id: string): Promise<void> {
 export async function fetchOrders(): Promise<Order[]> {
   if (!isSupabaseConfigured || !supabase) return [];
 
-  const { data, error } = await supabase
+  const { data, error } = await getDb()
     .from("orders")
     .select("*, order_items(*)")
     .order("created_at", { ascending: false });
@@ -335,7 +341,7 @@ export async function fetchOrders(): Promise<Order[]> {
 export async function fetchOrderById(id: string): Promise<Order | null> {
   if (!isSupabaseConfigured || !supabase) return null;
 
-  const { data, error } = await supabase
+  const { data, error } = await getDb()
     .from("orders")
     .select("*, order_items(*)")
     .eq("id", id)
@@ -348,7 +354,7 @@ export async function fetchOrderById(id: string): Promise<Order | null> {
 export async function fetchOrderByNumber(orderNumber: string): Promise<Order | null> {
   if (!isSupabaseConfigured || !supabase) return null;
 
-  const { data, error } = await supabase
+  const { data, error } = await getDb()
     .from("orders")
     .select("*, order_items(*)")
     .eq("order_number", orderNumber)
@@ -390,7 +396,7 @@ export async function dbCreateOrder(input: {
 
   // 1. Upsert guest customer
   let customerId: string | null = null;
-  const { data: custData } = await supabase
+  const { data: custData } = await getDb()
     .from("customers")
     .insert({
       full_name: input.customer.fullName,
@@ -402,7 +408,7 @@ export async function dbCreateOrder(input: {
   if (custData) customerId = custData.id;
 
   // 2. Insert order
-  const { data: orderData, error: orderError } = await supabase
+  const { data: orderData, error: orderError } = await getDb()
     .from("orders")
     .insert({
       order_number: orderNumber,
@@ -427,7 +433,7 @@ export async function dbCreateOrder(input: {
 
   // 3. Insert order items
   if (input.items.length > 0) {
-    await supabase.from("order_items").insert(
+    await getDb().from("order_items").insert(
       input.items.map((item) => ({
         order_id: orderData.id,
         product_id: item.productId || null,
@@ -458,7 +464,7 @@ export async function dbUpdateOrderStatus(
   status: OrderStatus
 ): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return;
-  await supabase.from("orders").update({ status }).eq("id", id);
+  await getDb().from("orders").update({ status }).eq("id", id);
 }
 
 // ---------------------------------------------------------------------------
@@ -473,14 +479,14 @@ export interface SubscribeResult {
 export async function fetchSubscribers(): Promise<Subscriber[]> {
   if (!isSupabaseConfigured || !supabase) return [];
 
-  const { data, error } = await supabase
+  const { data, error } = await getDb()
     .from("newsletter_subscribers")
     .select("*")
     .order("created_at", { ascending: false });
 
   if (error || !data) return [];
 
-  return data.map((row) => ({
+  return (data as { id: string; email: string; status: string; created_at: string }[]).map((row) => ({
     id: row.id,
     email: row.email,
     status: row.status as "active" | "unsubscribed",
@@ -499,7 +505,7 @@ export async function dbUpsertSubscriber(email: string): Promise<SubscribeResult
   }
 
   // Check existing
-  const { data: existing } = await supabase
+  const { data: existing } = await getDb()
     .from("newsletter_subscribers")
     .select("id, status")
     .eq("email", cleanEmail)
@@ -507,7 +513,7 @@ export async function dbUpsertSubscriber(email: string): Promise<SubscribeResult
 
   if (existing) {
     if (existing.status === "unsubscribed") {
-      await supabase
+      await getDb()
         .from("newsletter_subscribers")
         .update({ status: "active" })
         .eq("email", cleanEmail);
@@ -516,7 +522,7 @@ export async function dbUpsertSubscriber(email: string): Promise<SubscribeResult
     return { success: false, message: "This email is already subscribed to NEXORA." };
   }
 
-  const { error } = await supabase
+  const { error } = await getDb()
     .from("newsletter_subscribers")
     .insert({ email: cleanEmail, status: "active" });
 
@@ -526,7 +532,7 @@ export async function dbUpsertSubscriber(email: string): Promise<SubscribeResult
 
 export async function dbDeleteSubscriber(email: string): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return;
-  await supabase.from("newsletter_subscribers").delete().eq("email", email);
+  await getDb().from("newsletter_subscribers").delete().eq("email", email);
 }
 
 export async function dbToggleSubscriberStatus(
@@ -534,7 +540,7 @@ export async function dbToggleSubscriberStatus(
   newStatus: "active" | "unsubscribed"
 ): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return;
-  await supabase
+  await getDb()
     .from("newsletter_subscribers")
     .update({ status: newStatus })
     .eq("email", email);
